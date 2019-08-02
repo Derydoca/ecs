@@ -1,0 +1,1 @@
+"%PREMAKE_INSTALLATION_DIR%\premake5.exe" vs2017
