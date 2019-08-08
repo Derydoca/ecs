@@ -7,6 +7,7 @@ int main()
 {
 	movementSystem movementSys;
 	turningSystem turningSys;
+
 	int numEntities = 50;
 	
 	position* positions = new position[numEntities];
@@ -45,12 +46,22 @@ int main()
 		}
 	}
 
+	movementSystemData movementData;
+	movementData.count = numEntities;
+	movementData.positions = positions;
+	movementData.rotations = rotations;
+	movementData.speeds = speeds;
+
+	turningSystemData turningData;
+	turningData.count = numEntities;
+	turningData.rotations = rotations;
+
 	while (true)
 	{
-		movementSys.run(numEntities, positions, rotations, speeds);
-		turningSys.run(numEntities, rotations);
+		movementSys.run(movementData);
+		turningSys.run(turningData);
 		std::cout << positions[5].x << ", " << positions[5].y << std::endl;
 	}
 	
-	return 123;
+	return 0;
 }

@@ -2,21 +2,21 @@
 #include "systems.h"
 #include <math.h>
 
-void movementSystem::run(unsigned int count, position* positions, rotation* rotations, speed* speeds)
+void movementSystem::run(movementSystemData& data)
 {
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < data.count; i++)
 	{
-		float dx = cos(rotations[i].value) * speeds[i].value;
-		float dy = sin(rotations[i].value) * speeds[i].value;
-		positions[i].x += dx;
-		positions[i].y += dy;
+		float dx = cos(data.rotations[i].value) * data.speeds[i].value;
+		float dy = sin(data.rotations[i].value) * data.speeds[i].value;
+		data.positions[i].x += dx;
+		data.positions[i].y += dy;
 	}
 }
 
-void turningSystem::run(unsigned int count, rotation* rotations)
+void turningSystem::run(turningSystemData& data)
 {
-	for (unsigned int i = 0; i < count; i++)
+	for (unsigned int i = 0; i < data.count; i++)
 	{
-		rotations[i].value += 0.005f;
+		data.rotations[i].value += 0.005f;
 	}
 }
