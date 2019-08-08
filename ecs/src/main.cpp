@@ -5,12 +5,12 @@
 
 int main()
 {
-	movementSystem movementSys;
-	turningSystem turningSys;
+	MovementSystem movementSys;
+	TurningSystem turningSys;
 
 	int numEntities = 50;
 	
-	position* positions = new position[numEntities];
+	Position* positions = new Position[numEntities];
 	{
 		float currx = 0;
 		float curry = 0;
@@ -24,7 +24,7 @@ int main()
 		}
 	}
 
-	rotation* rotations = new rotation[numEntities];
+	Rotation* rotations = new Rotation[numEntities];
 	{
 		float curr = 0;
 		for (int i = 0; i < numEntities; i++)
@@ -35,7 +35,7 @@ int main()
 		}
 	}
 
-	speed* speeds = new speed[numEntities];
+	Speed* speeds = new Speed[numEntities];
 	{
 		float curr = 0;
 		for (int i = 0; i < numEntities; i++)
@@ -46,20 +46,20 @@ int main()
 		}
 	}
 
-	movementSystemData movementData;
+	MovementSystemData movementData;
 	movementData.count = numEntities;
 	movementData.positions = positions;
 	movementData.rotations = rotations;
 	movementData.speeds = speeds;
 
-	turningSystemData turningData;
+	TurningSystemData turningData;
 	turningData.count = numEntities;
 	turningData.rotations = rotations;
 
 	while (true)
 	{
-		movementSys.run(movementData);
-		turningSys.run(turningData);
+		movementSys.Run(movementData);
+		turningSys.Run(turningData);
 		std::cout << positions[5].x << ", " << positions[5].y << std::endl;
 	}
 	

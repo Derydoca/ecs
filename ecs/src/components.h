@@ -1,16 +1,16 @@
 #pragma once
 
-struct position
+struct Position
 {
 	float x, y;
 };
 
-struct rotation
+struct Rotation
 {
 	float value;
 };
 
-struct speed
+struct Speed
 {
 	float value;
 };

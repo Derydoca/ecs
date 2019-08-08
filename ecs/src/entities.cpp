@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "entities.h"
 
-entity::entity()
+Entity::Entity()
 {
 	static int nextId = 0;
 	id = nextId++;

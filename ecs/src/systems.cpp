@@ -2,7 +2,7 @@
 #include "systems.h"
 #include <math.h>
 
-void movementSystem::run(movementSystemData& data)
+void MovementSystem::Run(MovementSystemData& data)
 {
 	for (unsigned int i = 0; i < data.count; i++)
 	{
@@ -13,7 +13,7 @@ void movementSystem::run(movementSystemData& data)
 	}
 }
 
-void turningSystem::run(turningSystemData& data)
+void TurningSystem::Run(TurningSystemData& data)
 {
 	for (unsigned int i = 0; i < data.count; i++)
 	{

@@ -1,28 +1,28 @@
 #pragma once
 #include "components.h"
 
-struct movementSystemData
+struct MovementSystemData
 {
 	unsigned int count;
-	position* positions;
-	rotation* rotations;
-	speed* speeds;
+	Position* positions;
+	Rotation* rotations;
+	Speed* speeds;
 };
 
-class movementSystem
+class MovementSystem
 {
 public:
-	void run(movementSystemData& data);
+	void Run(MovementSystemData& data);
 };
 
-struct turningSystemData
+struct TurningSystemData
 {
 	unsigned int count;
-	rotation* rotations;
+	Rotation* rotations;
 };
 
-class turningSystem
+class TurningSystem
 {
 public:
-	void run(turningSystemData& data);
+	void Run(TurningSystemData& data);
 };

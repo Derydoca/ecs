@@ -1,8 +1,8 @@
 #pragma once
 
-struct entity
+struct Entity
 {
 	unsigned int id;
 
-	entity();
+	Entity();
 };
