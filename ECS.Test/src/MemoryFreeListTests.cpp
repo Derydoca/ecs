@@ -24,3 +24,12 @@ TEST(MemoryFreeList, TheThirdPop_Equals_Two)
 	int poppedValue = freeList.Pop();
 	ASSERT_EQ(poppedValue, 2);
 }
+
+TEST(MemoryFreeList, PopPushPop_ResultsIn_ThePushedValue)
+{
+	ECS::Memory::MemoryFreeList freeList(5);
+	freeList.Pop();
+	freeList.Push(25);
+	int poppedValue = freeList.Pop();
+	ASSERT_EQ(poppedValue, 25);
+}
