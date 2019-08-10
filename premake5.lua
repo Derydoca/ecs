@@ -73,7 +73,7 @@ project "ECS.Test"
     {
         "%{wks.location}/ECS/src",
         "%{prj.location}/src",
-        "%{wks.location}/vendor/gtest/googletest/include"
+        "%{wks.location}/Vendor/GoogleTest/googletest/include"
     }
 
     links
@@ -99,7 +99,7 @@ project "ECS.Test"
         runtime "Debug"
 
 project "GoogleTest"
-    location "vendor/GeneratedProjects"
+    location "Vendor/GeneratedProjects"
     kind "StaticLib"
     language "C++"
 
@@ -113,13 +113,13 @@ project "GoogleTest"
 
     files
     {
-        "vendor/gtest/googletest/src/gtest-all.cc"
+        "Vendor/GoogleTest/googletest/src/gtest-all.cc"
     }
 
     includedirs
     {
-        "%{wks.location}/vendor/gtest/googletest",
-        "%{wks.location}/vendor/gtest/googletest/include"
+        "%{wks.location}/Vendor/GoogleTest/googletest",
+        "%{wks.location}/Vendor/GoogleTest/googletest/include"
     }
 
     filter "system:windows"

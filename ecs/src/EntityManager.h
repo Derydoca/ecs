@@ -9,11 +9,11 @@ namespace ECS
 	{
 		int Id;
 
-		template<struct ComponentType>
+		/*template<struct ComponentType>
 		static ComponentTypeIdentifier Get(ComponentType type)
 		{
 
-		}
+		}*/
 	};
 
 	template<typename ... ComponentTypes>

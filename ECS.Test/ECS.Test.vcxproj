@@ -7,10 +7,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</ProjectGuid>
+    <ProjectGuid>{4EF1FB13-3ABE-561F-63D7-44C74F038CAD}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ECS</RootNamespace>
+    <RootNamespace>ECS.Test</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -29,9 +29,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug-windows-x86_64\ECS\</OutDir>
-    <IntDir>..\bin-int\Debug-windows-x86_64\ECS\</IntDir>
-    <TargetName>ECS</TargetName>
+    <OutDir>..\bin\Debug-windows-x86_64\ECS.Test\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\ECS.Test\</IntDir>
+    <TargetName>ECS.Test</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -39,8 +39,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>ECS_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;_HAS_TR1_NAMESPACE;ECS_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ECS\src;src;..\Vendor\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -54,22 +54,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\BlockAllocator.h" />
-    <ClInclude Include="src\Entity.h" />
-    <ClInclude Include="src\EntityManager.h" />
-    <ClInclude Include="src\components.h" />
-    <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\systems.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\BlockAllocator.cpp" />
-    <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\components.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\systems.cpp" />
+    <ProjectReference Include="..\ECS\ECS.vcxproj">
+      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Vendor\GeneratedProjects\GoogleTest.vcxproj">
+      <Project>{A2790B43-8E31-4D90-F738-26ECE30FE880}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
