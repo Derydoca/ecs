@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "BlockAllocator.h"
 #include <memory>
+#include <cassert>
 
 namespace ECS
 {
@@ -30,7 +31,7 @@ namespace ECS
 			{
 				data = &m_data + (m_blockSize * id);
 			}
-			MemoryBlockDescriptor(id, m_data);
+			return MemoryBlockDescriptor(id, m_blockSize, m_data);
 		}
 
 		void BlockAllocator::Free(int blockId)
@@ -56,17 +57,13 @@ namespace ECS
 
 		void MemoryFreeList::Push(int id)
 		{
-			m_stack[m_stackHead++] = id;
+			m_stack[--m_stackHead] = id;
+			assert(id >= 0);
 		}
 
 		int MemoryFreeList::Pop()
 		{
-			if (m_stackHead < 1)
-			{
-				return -1;
-			}
-
-			return m_stack[m_stackHead--];
+			return m_stack[m_stackHead++];
 		}
 
 	}

@@ -22,13 +22,13 @@ namespace ECS
 
 		struct MemoryBlockDescriptor
 		{
-			const static int BlockSize = 1024 * 64;
-
-			void* m_data;
 			int m_id;
+			size_t m_blockSize;
+			void* m_data;
 
-			MemoryBlockDescriptor(int id, void* data) :
+			MemoryBlockDescriptor(int id, size_t blockSize, void* data) :
 				m_id(id),
+				m_blockSize(blockSize),
 				m_data(data)
 			{
 			}

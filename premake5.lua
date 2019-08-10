@@ -11,7 +11,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "ECS"
     location "ECS"
-    kind "ConsoleApp"
+    kind "StaticLib"
     language "C++"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -68,7 +68,6 @@ project "ECS.Test"
         "%{prj.name}/src/**.cpp"
     }
 
-    includedirs { vendorincludes }
     includedirs
     {
         "%{wks.location}/ECS/src",
@@ -89,7 +88,9 @@ project "ECS.Test"
         defines
         {
             "_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING",
-            "_HAS_TR1_NAMESPACE"
+            "_HAS_TR1_NAMESPACE",
+            "_CRT_SECURE_NO_WARNINGS",
+            "_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING"
         }
         
     filter "configurations:Debug"
