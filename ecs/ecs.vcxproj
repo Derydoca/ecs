@@ -55,14 +55,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\components.h" />
-    <ClInclude Include="src\entities.h" />
+    <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\BlockAllocator.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\systems.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\components.cpp" />
-    <ClCompile Include="src\entities.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\BlockAllocator.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
