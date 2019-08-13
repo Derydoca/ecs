@@ -6,8 +6,8 @@ void MovementSystem::Run(MovementSystemData& data)
 {
 	for (unsigned int i = 0; i < data.count; i++)
 	{
-		float dx = cos(data.rotations[i].value) * data.speeds[i].value;
-		float dy = sin(data.rotations[i].value) * data.speeds[i].value;
+		float dx = static_cast<float>(cos(data.rotations[i].value)) * data.speeds[i].value;
+		float dy = static_cast<float>(sin(data.rotations[i].value)) * data.speeds[i].value;
 		data.positions[i].x += dx;
 		data.positions[i].y += dy;
 	}

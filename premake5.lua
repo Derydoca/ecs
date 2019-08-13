@@ -43,7 +43,7 @@ project "ECS"
     filter "configurations:Debug"
         staticruntime "Off"
         defines "ECS_DEBUG"
-        symbols "On"
+        symbols "Full"
         runtime "Debug"
 
 project "ECS.Test"
@@ -95,7 +95,7 @@ project "ECS.Test"
         
     filter "configurations:Debug"
         defines "ECS_DEBUG"
-        symbols "On"
+        symbols "Full"
         staticruntime "Off"
         runtime "Debug"
 

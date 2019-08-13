@@ -34,9 +34,13 @@ namespace ECS
 			return MemoryBlockDescriptor(id, m_blockSize, m_data);
 		}
 
-		void BlockAllocator::Free(int blockId)
+		void BlockAllocator::Free(MemoryBlockDescriptor& memoryBlock)
 		{
-			m_freeList.Push(blockId);
+			m_freeList.Push(memoryBlock.m_id);
+
+			memoryBlock.m_blockSize = 0;
+			memoryBlock.m_data = nullptr;
+			memoryBlock.m_id = -1;
 		}
 
 		MemoryFreeList::MemoryFreeList(size_t size) :
@@ -46,7 +50,7 @@ namespace ECS
 			m_stack = static_cast<unsigned int*>(malloc(size * sizeof(unsigned int)));
 			for (size_t i = 0; i < m_size; i++)
 			{
-				m_stack[i] = i;
+				m_stack[i] = static_cast<int>(i);
 			}
 		}
 

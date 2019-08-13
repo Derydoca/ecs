@@ -42,7 +42,7 @@ namespace ECS
 			~BlockAllocator();
 
 			MemoryBlockDescriptor Allocate();
-			void Free(int blockId);
+			void Free(MemoryBlockDescriptor& memoryBlock);
 
 		private:
 			size_t m_blockSize;
