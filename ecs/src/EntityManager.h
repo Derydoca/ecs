@@ -2,25 +2,15 @@
 #include "BlockAllocator.h"
 #include "Entity.h"
 #include <array>
+#include "TypeIdentifier.h"
 
 namespace ECS
 {
-	struct ComponentTypeIdentifier
-	{
-		int Id;
-
-		/*template<struct ComponentType>
-		static ComponentTypeIdentifier Get(ComponentType type)
-		{
-
-		}*/
-	};
-
 	template<typename ... ComponentTypes>
 	struct EntityArchetype
 	{
 	public:
-		ComponentTypeIdentifier[16]& GetComponentTypes() const { return m_componentTypes; }
+		TypeIdentifier[16]& GetComponentTypes() const { return m_componentTypes; }
 		int GetChunkCapacity() const { return m_chunkCapacity; }
 
 	private:
