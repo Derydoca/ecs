@@ -57,6 +57,7 @@
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EntityBlockTests.cpp" />
     <ClCompile Include="src\BlockAllocatorTests.cpp" />
     <ClCompile Include="src\EntityArchetypeTests.cpp" />
     <ClCompile Include="src\EntityManagerTests.cpp" />

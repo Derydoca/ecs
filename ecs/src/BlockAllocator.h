@@ -32,6 +32,16 @@ namespace ECS
 				m_data(data)
 			{
 			}
+
+			bool operator==(const MemoryBlockDescriptor& rhs) const
+			{
+				return m_data == rhs.m_data;
+			}
+
+			bool operator!=(const MemoryBlockDescriptor& rhs) const
+			{
+				return !operator==(rhs);
+			}
 		};
 
 		class BlockAllocator
