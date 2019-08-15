@@ -32,8 +32,6 @@ namespace ECS
 		template<typename ComponentType>
 		void AddSharedComponentData(Entity& entity, ComponentType data);
 
-		EntityArchetype CreateArchetype()
-
 	private:
 		ECS::Memory::BlockAllocator m_allocator;
 	};

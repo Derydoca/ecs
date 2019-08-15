@@ -55,7 +55,9 @@
   <ItemGroup>
     <ClInclude Include="src\BlockAllocator.h" />
     <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\EntityArchetype.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\TypeIdentifier.h" />
     <ClInclude Include="src\components.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\systems.h" />
@@ -63,6 +65,7 @@
   <ItemGroup>
     <ClCompile Include="src\BlockAllocator.cpp" />
     <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\EntityArchetype.cpp" />
     <ClCompile Include="src\components.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

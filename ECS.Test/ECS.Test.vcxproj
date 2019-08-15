@@ -58,8 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BlockAllocatorTests.cpp" />
+    <ClCompile Include="src\EntityArchetypeTests.cpp" />
     <ClCompile Include="src\MemoryFreeListTests.cpp" />
     <ClCompile Include="src\TemporaryTests.cpp" />
+    <ClCompile Include="src\TypeIdentifierTests.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
