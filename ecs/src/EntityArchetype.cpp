@@ -39,8 +39,13 @@ namespace ECS
 			type13,
 			type14,
 			type15
-			}
+			},
+		m_entitySize(0)
 	{
+		for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+		{
+			m_entitySize += m_componentTypes[i].GetSize();
+		}
 	}
 
 }
