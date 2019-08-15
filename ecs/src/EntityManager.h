@@ -1,7 +1,6 @@
 #pragma once
 #include "BlockAllocator.h"
 #include "Entity.h"
-#include <array>
 #include "TypeIdentifier.h"
 
 namespace ECS
@@ -10,10 +9,10 @@ namespace ECS
 	class EntityManager
 	{
 	public:
-		EntityManager();
+		EntityManager(const size_t blockSize = 16 * 1024, const size_t blockCount = 16);
 		~EntityManager();
 
-		Entity CreateEntity();
+		void CreateEntity(Entity& entity);
 
 		template<typename ComponentType>
 		void AddComponentData(Entity& entity, ComponentType data);
@@ -23,6 +22,7 @@ namespace ECS
 
 	private:
 		ECS::Memory::BlockAllocator m_allocator;
+		int m_nextEntityId = 0;
 	};
 
 }
