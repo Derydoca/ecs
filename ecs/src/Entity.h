@@ -4,6 +4,11 @@ namespace ECS
 {
 	struct Entity
 	{
-		int id;
+	public:
+		Entity(int id);
+
+		const int GetId() { return m_id; }
+	private:
+		int m_id;
 	};
 }

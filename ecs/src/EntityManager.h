@@ -6,17 +6,6 @@
 
 namespace ECS
 {
-	template<typename ... ComponentTypes>
-	struct EntityArchetype
-	{
-	public:
-		TypeIdentifier[16]& GetComponentTypes() const { return m_componentTypes; }
-		int GetChunkCapacity() const { return m_chunkCapacity; }
-
-	private:
-		ComponentTypeIdentifier[16] m_componentTypes;
-		int m_chunkCapacity;
-	};
 
 	class EntityManager
 	{
