@@ -24,9 +24,9 @@ namespace ECS
 		{
 			int m_id;
 			size_t m_blockSize;
-			void* m_data;
+			char* m_data;
 
-			MemoryBlockDescriptor(int id, size_t blockSize, void* data) :
+			MemoryBlockDescriptor(int id, size_t blockSize, char* data) :
 				m_id(id),
 				m_blockSize(blockSize),
 				m_data(data)
@@ -57,7 +57,7 @@ namespace ECS
 		private:
 			size_t m_blockSize;
 			size_t m_count;
-			void* m_data;
+			char* m_data;
 			MemoryFreeList m_freeList;
 		};
 

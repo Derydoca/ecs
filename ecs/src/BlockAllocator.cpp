@@ -14,7 +14,7 @@ namespace ECS
 			m_freeList(count)
 		{
 			size_t allocSize = m_blockSize * m_count;
-			m_data = malloc(allocSize);
+			m_data = reinterpret_cast<char*>(malloc(allocSize));
 			memset(m_data, 0, allocSize);
 		}
 
