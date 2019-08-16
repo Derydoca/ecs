@@ -71,3 +71,16 @@ TEST_F(EntityBlockTest, EntityData_Equals_Zero_When_Deleted) {
 	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) == 0);
 	free(entityData);
 }
+
+TEST_F(EntityBlockTest, EntityData_NotEquals_SourceData_When_Deleted) {
+	char* entityData = reinterpret_cast<char*>(malloc(archetype.GetEntitySize()));
+	for (size_t i = 0; i < archetype.GetEntitySize(); i++)
+	{
+		entityData[i] = static_cast<char>(i);
+	}
+	entityBlock.InsertEntityData(2, entityData);
+	entityBlock.DeleteEntityData(2);
+	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
+	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) != 0);
+	free(entityData);
+}
