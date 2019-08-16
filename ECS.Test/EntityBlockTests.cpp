@@ -1,70 +1,73 @@
 #include "pch.h"
 #include "EntityBlock.h"
 
-TEST(EntityBlock, ReturnedDescriptor_Equals_ConstructorDescriptor) {
-	ECS::EntityArchetype archetype(ECS::tid<int>(), ECS::tid<float>());
+class EntityBlockTest : public ::testing::Test {
+protected:
+	EntityBlockTest(size_t blockSize = 256) :
+		archetype(ECS::tid<int>(), ECS::tid<float>()),
+		blockSize(blockSize),
+		data(0),
+		descriptor(25, blockSize, data),
+		entityBlock(descriptor, archetype)
+	{}
+
+	ECS::EntityArchetype archetype;
 	size_t blockSize = 256;
-	char* data = reinterpret_cast<char*>(malloc(blockSize));
-	ECS::Memory::MemoryBlockDescriptor descriptor(25, blockSize, data);
-	ECS::Memory::EntityBlock entityBlock(descriptor, archetype);
+	char* data;
+	ECS::Memory::MemoryBlockDescriptor descriptor;
+	ECS::Memory::EntityBlock entityBlock;
+
+	void SetUp() override
+	{
+		archetype = (ECS::tid<int>(), ECS::tid<float>());
+		blockSize = 256;
+		data = reinterpret_cast<char*>(malloc(blockSize));
+		descriptor = ECS::Memory::MemoryBlockDescriptor(25, blockSize, data);
+		entityBlock = ECS::Memory::EntityBlock(descriptor, archetype);
+	}
+
+	void TearDown() override
+	{
+		free(data);
+	}
+
+};
+
+TEST_F(EntityBlockTest, ReturnedDescriptor_Equals_ConstructorDescriptor) {
 	ASSERT_EQ(entityBlock.GetDescriptor(), descriptor);
-	free(data);
 }
 
-TEST(EntityBlock, ReturnedArchetype_Equals_ConstructorArchetype) {
-	ECS::EntityArchetype archetype(ECS::tid<int>(), ECS::tid<float>());
-	size_t blockSize = 256;
-	char* data = reinterpret_cast<char*>(malloc(blockSize));
-	ECS::Memory::MemoryBlockDescriptor descriptor(25, blockSize, data);
-	ECS::Memory::EntityBlock entityBlock(descriptor, archetype);
+TEST_F(EntityBlockTest, ReturnedArchetype_Equals_ConstructorArchetype) {
 	ASSERT_EQ(entityBlock.GetArchetype(), archetype);
-	free(data);
 }
 
-TEST(EntityBlock, MaxEntityCount_Equals_ExpectedAmount) {
-	ECS::EntityArchetype archetype(ECS::tid<int>(), ECS::tid<float>());
-	size_t blockSize = archetype.GetEntitySize() * 25;
-	char* data = reinterpret_cast<char*>(malloc(blockSize));
-	ECS::Memory::MemoryBlockDescriptor descriptor(25, blockSize, data);
-	ECS::Memory::EntityBlock entityBlock(descriptor, archetype);
-	ASSERT_EQ(entityBlock.GetMaxEntityCount(), 25);
-	free(data);
+TEST_F(EntityBlockTest, MaxEntityCount_Equals_ExpectedAmount) {
+	size_t maxEntityCount = blockSize / archetype.GetEntitySize();
+	ASSERT_EQ(entityBlock.GetMaxEntityCount(), maxEntityCount);
 }
 
-TEST(EntityBlock, EntityData_Equals_InsertedData) {
-	ECS::EntityArchetype archetype(ECS::tid<int>(), ECS::tid<float>());
+TEST_F(EntityBlockTest, EntityData_Equals_InsertedData) {
 	char* entityData = reinterpret_cast<char*>(malloc(archetype.GetEntitySize()));
 	for (size_t i = 0; i < archetype.GetEntitySize(); i++)
 	{
 		entityData[i] = static_cast<char>(i);
 	}
-	size_t blockSize = archetype.GetEntitySize() * 25;
-	char* data = reinterpret_cast<char*>(malloc(blockSize));
-	ECS::Memory::MemoryBlockDescriptor descriptor(25, blockSize, data);
-	ECS::Memory::EntityBlock entityBlock(descriptor, archetype);
 	entityBlock.InsertEntityData(2, entityData);
 	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
 	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) == 0);
 	free(entityData);
-	free(data);
 }
 
-TEST(EntityBlock, EntityData_Equals_Zero_When_Deleted) {
-	ECS::EntityArchetype archetype(ECS::tid<int>(), ECS::tid<float>());
+TEST_F(EntityBlockTest, EntityData_Equals_Zero_When_Deleted) {
 	char* entityData = reinterpret_cast<char*>(malloc(archetype.GetEntitySize()));
 	for (size_t i = 0; i < archetype.GetEntitySize(); i++)
 	{
 		entityData[i] = static_cast<char>(i);
 	}
-	size_t blockSize = archetype.GetEntitySize() * 25;
-	char* data = reinterpret_cast<char*>(malloc(blockSize));
-	ECS::Memory::MemoryBlockDescriptor descriptor(25, blockSize, data);
-	ECS::Memory::EntityBlock entityBlock(descriptor, archetype);
 	entityBlock.InsertEntityData(2, entityData);
 	entityBlock.DeleteEntityData(2);
 	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
 	memset(entityData, 0, archetype.GetEntitySize());
 	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) == 0);
 	free(entityData);
-	free(data);
 }
