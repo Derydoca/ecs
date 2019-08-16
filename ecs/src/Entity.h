@@ -5,7 +5,9 @@ namespace ECS
 	struct Entity
 	{
 	public:
-		Entity(int id = -1);
+		static const int INVALID_ENTITY_ID = 0;
+
+		Entity(int id = INVALID_ENTITY_ID);
 
 		const int GetId() { return m_id; }
 	private:

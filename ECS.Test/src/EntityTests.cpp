@@ -3,7 +3,7 @@
 
 TEST(Entity, DefaultConstructor_Has_InvalidId) {
 	ECS::Entity entity;
-	ASSERT_EQ(entity.GetId(), -1);
+	ASSERT_EQ(entity.GetId(), ECS::Entity::INVALID_ENTITY_ID);
 }
 
 TEST(Entity, EntityReturnsGivenId) {

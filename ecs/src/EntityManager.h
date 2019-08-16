@@ -22,7 +22,7 @@ namespace ECS
 
 	private:
 		ECS::Memory::BlockAllocator m_allocator;
-		int m_nextEntityId = 0;
+		int m_nextEntityId = 1;
 	};
 
 }
