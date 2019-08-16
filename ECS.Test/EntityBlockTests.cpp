@@ -42,8 +42,15 @@ TEST_F(EntityBlockTest, ReturnedArchetype_Equals_ConstructorArchetype) {
 }
 
 TEST_F(EntityBlockTest, MaxEntityCount_Equals_ExpectedAmount) {
-	size_t maxEntityCount = blockSize / archetype.GetEntitySize();
+	size_t headerOffset = blockSize / archetype.GetEntitySize();
+	size_t maxEntityCount = (blockSize - headerOffset) / archetype.GetEntitySize();
 	ASSERT_EQ(entityBlock.GetMaxEntityCount(), maxEntityCount);
+}
+
+TEST_F(EntityBlockTest, BlockSize_GE_HeaderAndEntitySize) {
+	size_t headerOffset = blockSize / archetype.GetEntitySize();
+	size_t maxEntityCount = (blockSize - headerOffset) / archetype.GetEntitySize();
+	ASSERT_GE(blockSize, headerOffset + (entityBlock.GetMaxEntityCount() * archetype.GetEntitySize()));
 }
 
 TEST_F(EntityBlockTest, EntityData_Equals_InsertedData) {

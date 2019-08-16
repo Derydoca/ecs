@@ -12,7 +12,10 @@ namespace ECS
 			m_archetype(archetype),
 			m_maxEntityCount(0)
 		{
-			m_maxEntityCount = blockDescriptor.m_blockSize / archetype.GetEntitySize();
+			size_t blockSize = blockDescriptor.m_blockSize;
+			size_t entitySize = archetype.GetEntitySize();
+			size_t headerOffset = blockSize / entitySize;
+			m_maxEntityCount = (blockSize - headerOffset) / entitySize;
 		}
 
 		void EntityBlock::InsertEntityData(const int entityIndex, const char* data)
