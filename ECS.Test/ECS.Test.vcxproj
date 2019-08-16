@@ -57,9 +57,9 @@
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EntityBlockTests.cpp" />
     <ClCompile Include="src\BlockAllocatorTests.cpp" />
     <ClCompile Include="src\EntityArchetypeTests.cpp" />
+    <ClCompile Include="src\EntityBlockTests.cpp" />
     <ClCompile Include="src\EntityManagerTests.cpp" />
     <ClCompile Include="src\EntityTests.cpp" />
     <ClCompile Include="src\MemoryFreeListTests.cpp" />

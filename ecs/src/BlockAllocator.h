@@ -22,16 +22,23 @@ namespace ECS
 
 		struct MemoryBlockDescriptor
 		{
+			static const int INVALID_ID = 0;
+
 			int m_id;
 			size_t m_blockSize;
 			char* m_data;
+
+			MemoryBlockDescriptor() :
+				m_id(INVALID_ID),
+				m_blockSize(-1),
+				m_data(0)
+			{}
 
 			MemoryBlockDescriptor(int id, size_t blockSize, char* data) :
 				m_id(id),
 				m_blockSize(blockSize),
 				m_data(data)
-			{
-			}
+			{}
 
 			bool operator==(const MemoryBlockDescriptor& rhs) const
 			{

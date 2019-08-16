@@ -6,16 +6,19 @@ namespace ECS
 {
 	namespace Memory
 	{
+		EntityBlock::EntityBlock() :
+			m_blockDescriptor(),
+			m_archetype(),
+			m_maxEntityCount(0)
+		{
+		}
 
 		EntityBlock::EntityBlock(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype) :
 			m_blockDescriptor(blockDescriptor),
 			m_archetype(archetype),
 			m_maxEntityCount(0)
 		{
-			size_t blockSize = blockDescriptor.m_blockSize;
-			size_t entitySize = archetype.GetEntitySize();
-			size_t headerOffset = blockSize / entitySize;
-			m_maxEntityCount = (blockSize - headerOffset) / entitySize;
+			Initialize();
 		}
 
 		void EntityBlock::InsertEntityData(const int entityIndex, const char* data)
@@ -34,6 +37,21 @@ namespace ECS
 		{
 			assert(entityIndex < m_maxEntityCount);
 			return &m_blockDescriptor.m_data[entityIndex * m_archetype.GetEntitySize()];
+		}
+
+		void EntityBlock::Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype)
+		{
+			m_blockDescriptor = blockDescriptor;
+			m_archetype = archetype;
+			Initialize();
+		}
+
+		void EntityBlock::Initialize()
+		{
+			size_t blockSize = m_blockDescriptor.m_blockSize;
+			size_t entitySize = m_archetype.GetEntitySize();
+			size_t headerOffset = blockSize / entitySize;
+			m_maxEntityCount = (blockSize - headerOffset) / entitySize;
 		}
 
 	}

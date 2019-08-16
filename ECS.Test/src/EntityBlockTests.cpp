@@ -91,3 +91,12 @@ TEST_F(EntityBlockTest, EntityData_NotEquals_SourceData_When_Deleted) {
 	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) != 0);
 	free(entityData);
 }
+
+TEST_F(EntityBlockTest, NewBlockWithAssign_Equals_ConstructorVariant)
+{
+	auto newBlock = ECS::Memory::EntityBlock();
+	newBlock.Assign(descriptor, archetype);
+	ASSERT_EQ(entityBlock.GetDescriptor(), newBlock.GetDescriptor());
+	ASSERT_EQ(entityBlock.GetArchetype(), newBlock.GetArchetype());
+	ASSERT_EQ(entityBlock.GetMaxEntityCount(), newBlock.GetMaxEntityCount());
+}

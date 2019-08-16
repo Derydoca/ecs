@@ -10,6 +10,7 @@ namespace ECS
 		class EntityBlock
 		{
 		public:
+			EntityBlock();
 			EntityBlock(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype);
 			const MemoryBlockDescriptor& GetDescriptor() { return m_blockDescriptor; }
 			const EntityArchetype& GetArchetype() { return m_archetype; }
@@ -17,6 +18,9 @@ namespace ECS
 			void InsertEntityData(const int entityIndex, const char* data);
 			void DeleteEntityData(const int entityIndex);
 			char* GetEntityMemoryAddress(const int entityIndex);
+			void Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype);
+		private:
+			void Initialize();
 		private:
 			MemoryBlockDescriptor m_blockDescriptor;
 			EntityArchetype m_archetype;

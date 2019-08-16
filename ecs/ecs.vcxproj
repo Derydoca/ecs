@@ -67,9 +67,9 @@
     <ClCompile Include="src\BlockAllocator.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\EntityArchetype.cpp" />
-    <ClCompile Include="src\components.cpp" />
     <ClCompile Include="src\EntityBlock.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\components.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
