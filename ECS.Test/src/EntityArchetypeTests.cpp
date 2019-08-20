@@ -35,3 +35,10 @@ TEST(EntityArchetype, EntityArchetype_IntFloat_DoesNotEqual_FloatInt_WithIgnoreF
 	ECS::EntityArchetype archetypeFloatInt(ECS::tid<float>(), ECS::tid<int>());
 	ASSERT_FALSE(archetypeIntFloat.Equals(archetypeFloatInt, ECS::EntityArchetypeComparisonFlags::None));
 }
+
+TEST(EntityArchetype, AppendedArchetype_Equals_MatchingConstructedArchetype)
+{
+	ECS::EntityArchetype originalArchetype(ECS::tid<int>(), ECS::tid<float>());
+	ECS::EntityArchetype expectedArchetype(ECS::tid<int>(), ECS::tid<float>(), ECS::tid<char>());
+	ASSERT_EQ(ECS::EntityArchetype::CreateArchetypeWithNewType(originalArchetype, ECS::tid<char>()), expectedArchetype);
+}

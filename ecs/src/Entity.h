@@ -9,7 +9,20 @@ namespace ECS
 
 		Entity(int id = INVALID_ENTITY_ID);
 
-		const int GetId() { return m_id; }
+		const int GetId() const
+		{
+			return (m_id & 0xFFFF);
+		}
+
+		bool operator==(const Entity& rhs) const
+		{
+			return m_id == rhs.m_id;
+		}
+
+		bool operator!=(const Entity& rhs) const
+		{
+			return m_id != rhs.m_id;
+		}
 	private:
 		int m_id;
 

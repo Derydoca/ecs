@@ -72,7 +72,7 @@ TEST_F(EntityBlockTest, EntityData_Equals_Zero_When_Deleted) {
 		entityData[i] = static_cast<char>(i);
 	}
 	entityBlock.InsertEntityData(2, entityData);
-	entityBlock.DeleteEntityData(2);
+	entityBlock.DeleteEntity(2);
 	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
 	memset(entityData, 0, archetype.GetEntitySize());
 	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) == 0);
@@ -86,7 +86,7 @@ TEST_F(EntityBlockTest, EntityData_NotEquals_SourceData_When_Deleted) {
 		entityData[i] = static_cast<char>(i);
 	}
 	entityBlock.InsertEntityData(2, entityData);
-	entityBlock.DeleteEntityData(2);
+	entityBlock.DeleteEntity(2);
 	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
 	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) != 0);
 	free(entityData);
@@ -99,4 +99,17 @@ TEST_F(EntityBlockTest, NewBlockWithAssign_Equals_ConstructorVariant)
 	ASSERT_EQ(entityBlock.GetDescriptor(), newBlock.GetDescriptor());
 	ASSERT_EQ(entityBlock.GetArchetype(), newBlock.GetArchetype());
 	ASSERT_EQ(entityBlock.GetMaxEntityCount(), newBlock.GetMaxEntityCount());
+}
+
+TEST_F(EntityBlockTest, EntityID_Equals_ConstructedID_When_InsertedAndRetrieved)
+{
+	entityBlock.InsertEntity(5, ECS::Entity(25));
+	ASSERT_EQ(entityBlock.GetEntity(5).GetId(), 25);
+}
+
+TEST_F(EntityBlockTest, EntityID_Equals_InvalidEntity_When_EntityIsDeleted)
+{
+	entityBlock.InsertEntity(5, ECS::Entity(25));
+	entityBlock.DeleteEntity(5);
+	ASSERT_EQ(entityBlock.GetEntity(5).GetId(), ECS::Entity::INVALID_ENTITY_ID);
 }

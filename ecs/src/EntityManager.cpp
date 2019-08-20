@@ -6,43 +6,93 @@ ECS::EntityManager::EntityManager(const size_t blockSize, const size_t blockCoun
 	m_allocator(blockSize, blockCount),
 	m_nextEntityId(1),
 	m_blockCount(blockCount),
-	m_entityBlocks(0)
+	m_entityBlocks(0),
+	m_maxEntities(1024 * 1024),
+	m_entityLocations(0)
 {
 	m_entityBlocks = new Memory::EntityBlock[m_blockCount];
+	m_entityLocations = new EntityLocation[m_maxEntities];
 }
 
 ECS::EntityManager::~EntityManager()
 {
 	delete[](m_entityBlocks);
+	delete[](m_entityLocations);
 }
 
 void ECS::EntityManager::CreateEntity(Entity& entity)
 {
-	assert(entity.m_id <= 0);
-	entity.m_id = m_nextEntityId++;
+	CreateEntityWithData(entity, EntityArchetype(), nullptr);
 }
 
 void ECS::EntityManager::CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer)
 {
-	size_t firstEmptyBlock = -1;
-	for (size_t i = 0; i < m_blockCount; i++)
+	assert(entity.m_id <= 0);
+	entity.m_id = m_nextEntityId++;
+	InsertEntityDataInFirstOpenSlot(entity, EntityArchetype(), dataPointer);
+}
+
+void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
+{
+	EntityLocation sourceLocation = m_entityLocations[entity.GetId()];
+	Memory::EntityBlock sourceEntityBlock = m_entityBlocks[sourceLocation.GetBlockIndex()];
+	EntityArchetype sourceArchetype = sourceEntityBlock.GetArchetype();
+	EntityArchetype destinationArchetype = EntityArchetype::CreateArchetypeWithNewType(sourceArchetype, tid);
+
+	EntityLocation destinationLocation;
+	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
 	{
-		Memory::EntityBlock entityBlock = m_entityBlocks[i];
+		Memory::EntityBlock entityBlock = m_entityBlocks[blockIndex];
+		if (entityBlock.GetArchetype().Equals(destinationArchetype, ECS::EntityArchetypeComparisonFlags::IgnoreOrder))
+		{
+			Entity* entityArray = reinterpret_cast<Entity*>(entityBlock.GetDescriptor().m_data);
+			for (unsigned int entityIndex = 0; entityIndex < static_cast<unsigned int>(entityBlock.GetMaxEntityCount()); entityIndex++)
+			{
+				Entity entity = entityArray[entityIndex];
+				if (entity.m_id == Entity::INVALID_ENTITY_ID)
+				{
+					destinationLocation.Set(blockIndex, entityIndex);
+				}
+			}
+		}
+	}
+	Memory::EntityBlock destinationBlock = m_entityBlocks[destinationLocation.GetBlockIndex()];
+	destinationBlock.InsertEntityCopy
+	(
+		destinationLocation.GetEntityIndex(),
+		entity,
+		sourceArchetype,
+		sourceEntityBlock.GetEntityMemoryAddress(sourceLocation.GetEntityIndex())
+	);
+	sourceEntityBlock.DeleteEntity(sourceLocation.GetEntityIndex());
+}
+
+void ECS::EntityManager::InsertEntityDataInFirstOpenSlot(const Entity entity, const EntityArchetype archetype, char* dataPointer)
+{
+	unsigned int firstEmptyBlock = -1;
+	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
+	{
+		Memory::EntityBlock entityBlock = m_entityBlocks[blockIndex];
 		if (entityBlock.GetArchetype() == archetype)
 		{
 			Entity* entityArray = reinterpret_cast<Entity*>(entityBlock.GetDescriptor().m_data);
-			for (size_t j = 0; j < entityBlock.GetMaxEntityCount(); j++)
+			for (unsigned int entityIndex = 0; entityIndex < static_cast<unsigned int>(entityBlock.GetMaxEntityCount()); entityIndex++)
 			{
-				Entity entity = entityArray[j];
+				Entity entity = entityArray[entityIndex];
 				if (entity.GetId() != Entity::INVALID_ENTITY_ID)
 				{
-					entityBlock.InsertEntityData(static_cast<int>(j), dataPointer);
+					entityBlock.InsertEntity(static_cast<int>(entityIndex), entity);
+					if (dataPointer)
+					{
+						entityBlock.InsertEntityData(static_cast<int>(entityIndex), dataPointer);
+						m_entityLocations[entity.GetId()].Set(blockIndex, entityIndex);
+					}
 				}
 			}
 		}
 		else if (firstEmptyBlock == -1 && entityBlock.GetDescriptor().m_id == Memory::MemoryBlockDescriptor::INVALID_ID)
 		{
-			firstEmptyBlock = i;
+			firstEmptyBlock = blockIndex;
 		}
 	}
 
@@ -50,7 +100,12 @@ void ECS::EntityManager::CreateEntityWithData(Entity& entity, const EntityArchet
 	{
 		Memory::EntityBlock newBlock = m_entityBlocks[firstEmptyBlock];
 		newBlock.Assign(m_allocator.Allocate(), archetype);
-		newBlock.InsertEntityData(0, dataPointer);
+		newBlock.InsertEntity(0, entity);
+		if (dataPointer)
+		{
+			newBlock.InsertEntityData(0, dataPointer);
+			m_entityLocations[entity.GetId()].Set(firstEmptyBlock, 0);
+		}
 	}
 	else
 	{

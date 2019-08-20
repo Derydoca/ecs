@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EntityArchetype.h"
+#include <cassert>
 
 namespace ECS
 {
@@ -46,6 +47,25 @@ namespace ECS
 		{
 			m_entitySize += m_componentTypes[i].GetSize();
 		}
+	}
+
+	EntityArchetype EntityArchetype::CreateArchetypeWithNewType(EntityArchetype archetype, TID typeToAppend)
+	{
+		EntityArchetype newArchetype = EntityArchetype(archetype);
+
+		bool completed = false;
+		for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+		{
+			if(newArchetype.m_componentTypes[i] == NULL_TID)
+			{
+				newArchetype.m_componentTypes[i] = typeToAppend;
+				completed = true;
+				break;
+			}
+		}
+		assert(completed);
+
+		return newArchetype;
 	}
 
 }

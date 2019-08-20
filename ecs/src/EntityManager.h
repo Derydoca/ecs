@@ -4,6 +4,7 @@
 #include "TypeIdentifier.h"
 #include "EntityArchetype.h"
 #include "EntityBlock.h"
+#include "EntityLocation.h"
 
 namespace ECS
 {
@@ -16,17 +17,18 @@ namespace ECS
 
 		void CreateEntity(Entity& entity);
 		void CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer);
-
-		template<typename ComponentType>
-		void AddComponentData(Entity& entity, ComponentType data);
-
-		template<typename ComponentType>
-		void AddSharedComponentData(Entity& entity, ComponentType data);
+		void AddComponentData(Entity entity, TID tid);
+	private:
+		void InsertEntityDataInFirstOpenSlot(const Entity entity, const EntityArchetype archetype, char* dataPointer);
 	private:
 		Memory::BlockAllocator m_allocator;
 		size_t m_blockCount;
 		int m_nextEntityId;
 		Memory::EntityBlock* m_entityBlocks;
+		EntityLocation* m_entityLocations;
+		size_t m_maxEntities;
+
+		friend class EntityManagerDebugInfo;
 	};
 
 }

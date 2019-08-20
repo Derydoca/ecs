@@ -57,7 +57,9 @@
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityArchetype.h" />
     <ClInclude Include="src\EntityBlock.h" />
+    <ClInclude Include="src\EntityLocation.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\EntityManagerDebugInfo.h" />
     <ClInclude Include="src\TypeIdentifier.h" />
     <ClInclude Include="src\components.h" />
     <ClInclude Include="src\pch.h" />
@@ -70,6 +72,7 @@
     <ClCompile Include="src\EntityBlock.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\components.cpp" />
+    <ClCompile Include="src\EntityManagerDebugInfo.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

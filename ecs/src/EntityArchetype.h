@@ -36,6 +36,11 @@ namespace ECS
 			TID type15 = NULL_TID
 			);
 
+		static EntityArchetype CreateArchetypeWithNewType(
+			EntityArchetype archetype,
+			TID typeToAppend
+		);
+
 		int GetChunkCapacity() const { return m_chunkCapacity; }
 		size_t GetEntitySize() const { return m_entitySize; }
 

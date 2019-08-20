@@ -21,16 +21,29 @@ namespace ECS
 			Initialize();
 		}
 
+		void EntityBlock::InsertEntity(const int entityIndex, const Entity entity)
+		{
+			assert(entityIndex < m_maxEntityCount);
+			reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex] = entity;
+		}
+
 		void EntityBlock::InsertEntityData(const int entityIndex, const char* data)
 		{
 			assert(entityIndex < m_maxEntityCount);
 			memcpy(GetEntityMemoryAddress(entityIndex), data, m_archetype.GetEntitySize());
 		}
 
-		void EntityBlock::DeleteEntityData(const int entityIndex)
+		void EntityBlock::DeleteEntity(const int entityIndex)
 		{
 			assert(entityIndex < m_maxEntityCount);
+			reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex] = Entity::INVALID_ENTITY_ID;
 			memset(GetEntityMemoryAddress(entityIndex), 0, m_archetype.GetEntitySize());
+		}
+
+		const Entity EntityBlock::GetEntity(const int entityIndex) const
+		{
+			assert(entityIndex < m_maxEntityCount);
+			return reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex];
 		}
 
 		char* EntityBlock::GetEntityMemoryAddress(const int entityIndex)
@@ -44,6 +57,10 @@ namespace ECS
 			m_blockDescriptor = blockDescriptor;
 			m_archetype = archetype;
 			Initialize();
+		}
+
+		void EntityBlock::InsertEntityCopy(unsigned int entityIndex, Entity entity, EntityArchetype sourceArchetype, char* sourceEntityData)
+		{
 		}
 
 		void EntityBlock::Initialize()

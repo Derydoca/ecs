@@ -20,7 +20,7 @@ namespace ECS
 
 		BlockAllocator::~BlockAllocator()
 		{
-			free(m_data);
+			//free(m_data);
 		}
 
 		MemoryBlockDescriptor BlockAllocator::Allocate()
@@ -47,7 +47,7 @@ namespace ECS
 			m_size(size),
 			m_stackHead(0)
 		{
-			m_stack = static_cast<unsigned int*>(malloc(size * sizeof(unsigned int)));
+			m_stack = new unsigned int[size];
 			for (size_t i = 0; i < m_size; i++)
 			{
 				m_stack[i] = static_cast<int>(i);
@@ -56,7 +56,7 @@ namespace ECS
 
 		MemoryFreeList::~MemoryFreeList()
 		{
-			free(m_stack);
+			delete[](m_stack);
 		}
 
 		void MemoryFreeList::Push(int id)
