@@ -70,15 +70,3 @@ namespace ECS
 
 	}
 }
-
-// Entity block
-//===============
-// Template Key
-// Count
-// Component 1
-// Component 1
-// Component 1
-// Component 2
-// Component 2
-// Component 2
-// ...
