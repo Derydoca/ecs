@@ -49,7 +49,7 @@ namespace ECS
 		char* EntityBlock::GetEntityMemoryAddress(const int entityIndex)
 		{
 			assert(entityIndex < m_maxEntityCount);
-			return &m_blockDescriptor.m_data[entityIndex * m_archetype.GetEntitySize()];
+			return &m_blockDescriptor.m_data[sizeof(Entity) * m_maxEntityCount + entityIndex * m_archetype.GetEntitySize()];
 		}
 
 		void EntityBlock::Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype)
@@ -67,8 +67,21 @@ namespace ECS
 		{
 			size_t blockSize = m_blockDescriptor.m_blockSize;
 			size_t entitySize = m_archetype.GetEntitySize();
-			size_t headerOffset = blockSize / entitySize;
-			m_maxEntityCount = (blockSize - headerOffset) / entitySize;
+			if (entitySize == 0)
+			{
+				m_maxEntityCount = blockSize / sizeof(Entity);
+			}
+			else
+			{
+				size_t headerOffset = blockSize / entitySize;
+				m_maxEntityCount = (blockSize - headerOffset) / entitySize;
+			}
+
+			// Set all entities to an invalid ID
+			if (m_blockDescriptor.m_data)
+			{
+				memset(m_blockDescriptor.m_data, Entity::INVALID_ENTITY_ID, m_maxEntityCount);
+			}
 		}
 
 	}

@@ -6,8 +6,10 @@ namespace ECS
 
 	struct EntityLocation
 	{
+		const static EntityLocation INVALID_LOCATION;
+
 		EntityLocation() :
-			m_data(0)
+			m_data(INVALID_LOCATION.m_data)
 		{}
 
 		EntityLocation(unsigned int blockIndex, unsigned int entityIndex)
@@ -15,11 +17,20 @@ namespace ECS
 			Set(blockIndex, entityIndex);
 		}
 
+		EntityLocation(unsigned int rawLocationValue) :
+			m_data(rawLocationValue)
+		{}
+
 		void Set(unsigned int blockIndex, unsigned int entityIndex)
 		{
 			// Do not allow indices greater than the index mask
 			assert((entityIndex >> NUM_INDEX_BITS) == 0);
 			m_data = (blockIndex << NUM_INDEX_BITS) | entityIndex;
+		}
+
+		void ResetToInvalid()
+		{
+			m_data = INVALID_LOCATION.m_data;
 		}
 
 		unsigned int GetBlockIndex()

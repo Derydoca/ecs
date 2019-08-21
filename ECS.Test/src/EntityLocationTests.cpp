@@ -35,3 +35,10 @@ TEST(EntityLocation, SetValues_Equals_ConstructedValues)
 	location.Set(5, 25);
 	ASSERT_EQ(location, expectedLocation);
 }
+
+TEST(EntityLocation, IsInvalidLocation_When_ResetToInvalidIsCalled)
+{
+	ECS::EntityLocation location = ECS::EntityLocation(5, 25);
+	location.ResetToInvalid();
+	ASSERT_EQ(location, ECS::EntityLocation::INVALID_LOCATION);
+}

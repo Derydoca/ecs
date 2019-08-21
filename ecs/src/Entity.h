@@ -5,13 +5,13 @@ namespace ECS
 	struct Entity
 	{
 	public:
-		static const int INVALID_ENTITY_ID = 0;
+		static const int INVALID_ENTITY_ID;
 
 		Entity(int id = INVALID_ENTITY_ID);
 
 		const int GetId() const
 		{
-			return (m_id & 0xFFFF);
+			return m_id;
 		}
 
 		bool operator==(const Entity& rhs) const

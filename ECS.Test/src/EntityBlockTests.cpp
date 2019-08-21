@@ -3,8 +3,11 @@
 
 class EntityBlockTest : public ::testing::Test {
 protected:
-	EntityBlockTest(size_t blockSize = 256) :
-		archetype(ECS::tid<int>(), ECS::tid<float>()),
+	EntityBlockTest(
+		size_t blockSize = 256,
+		ECS::EntityArchetype archetype = ECS::EntityArchetype(ECS::tid<int>(), ECS::tid<float>())
+	) :
+		archetype(archetype),
 		blockSize(blockSize),
 		data(0),
 		descriptor(25, blockSize, data),
@@ -111,5 +114,14 @@ TEST_F(EntityBlockTest, EntityID_Equals_InvalidEntity_When_EntityIsDeleted)
 {
 	entityBlock.InsertEntity(5, ECS::Entity(25));
 	entityBlock.DeleteEntity(5);
-	ASSERT_EQ(entityBlock.GetEntity(5).GetId(), ECS::Entity::INVALID_ENTITY_ID);
+	int deletedEntityId = entityBlock.GetEntity(5).GetId();
+	ASSERT_EQ(deletedEntityId, ECS::Entity::INVALID_ENTITY_ID);
+}
+
+TEST(EntityBlock, MaxEntityCount_Equals_CapacityOfEntireBlock_When_ArchetypeHasNoTypes)
+{
+	ECS::Memory::MemoryBlockDescriptor blockDescriptor = ECS::Memory::MemoryBlockDescriptor(25, 256, nullptr);
+	size_t expectedMaxEntityCount = blockDescriptor.m_blockSize / sizeof(ECS::Entity);
+	ECS::Memory::EntityBlock block = ECS::Memory::EntityBlock(blockDescriptor, ECS::EntityArchetype());
+	ASSERT_EQ(block.GetMaxEntityCount(), expectedMaxEntityCount);
 }

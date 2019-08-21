@@ -18,6 +18,8 @@ namespace ECS
 		void CreateEntity(Entity& entity);
 		void CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer);
 		void AddComponentData(Entity entity, TID tid);
+
+		void DeleteEntity(Entity& entity);
 	private:
 		void InsertEntityDataInFirstOpenSlot(const Entity entity, const EntityArchetype archetype, char* dataPointer);
 	private:

@@ -17,6 +17,8 @@ namespace ECS
 	struct EntityArchetype
 	{
 	public:
+		const static EntityArchetype Empty;
+
 		EntityArchetype(
 			TID type00 = NULL_TID,
 			TID type01 = NULL_TID,

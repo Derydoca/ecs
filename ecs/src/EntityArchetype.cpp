@@ -5,6 +5,8 @@
 namespace ECS
 {
 
+	const EntityArchetype EntityArchetype::Empty = EntityArchetype();
+
 	EntityArchetype::EntityArchetype(
 		TID type00,
 		TID type01,

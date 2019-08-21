@@ -10,7 +10,15 @@ namespace ECS
 
 		const size_t GetEntityCount() const
 		{
-			return m_entityManager->m_nextEntityId - 1;
+			size_t counter = 0;
+			for (size_t i = 0; i < m_entityManager->m_nextEntityId; i++)
+			{
+				if (m_entityManager->m_entityLocations[i] != EntityLocation::INVALID_LOCATION)
+				{
+					counter++;
+				}
+			}
+			return counter;
 		}
 	private:
 		const EntityManager* m_entityManager;
