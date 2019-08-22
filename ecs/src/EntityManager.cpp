@@ -94,6 +94,26 @@ void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
 	sourceEntityBlock->DeleteEntity(sourceLocation.GetEntityIndex());
 }
 
+char* ECS::EntityManager::GetEntityDataPointer(Entity entity, TID componentTypeId)
+{
+	EntityLocation location = m_entityLocations[entity];
+	Memory::EntityBlock entityBlock = m_entityBlocks[location.GetBlockIndex()];
+	char* entityDataLocation = entityBlock.GetEntityMemoryAddress(location.GetEntityIndex());
+	size_t offset = entityBlock.GetArchetype().GetTypeOffset(componentTypeId);
+	assert(offset >= 0);
+	return entityDataLocation;
+}
+
+void ECS::EntityManager::SetEntityData(Entity entity, TID componentTypeId, char* componentData, size_t componentDataSize)
+{
+	EntityLocation location = m_entityLocations[entity];
+	Memory::EntityBlock entityBlock = m_entityBlocks[location.GetBlockIndex()];
+	char* entityDataLocation = entityBlock.GetEntityMemoryAddress(location.GetEntityIndex());
+	size_t offset = entityBlock.GetArchetype().GetTypeOffset(componentTypeId);
+	assert(offset >= 0);
+	memcpy(entityDataLocation + offset, componentData, componentDataSize);
+}
+
 void ECS::EntityManager::DeleteEntity(Entity& entity)
 {
 	assert(entity.GetId() != Entity::INVALID_ENTITY_ID);

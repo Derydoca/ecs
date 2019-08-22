@@ -20,6 +20,22 @@ namespace ECS
 		void CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer);
 		void AddComponentData(Entity entity, TID tid);
 
+		char* GetEntityDataPointer(const Entity entity, const TID componentTypeId);
+		void SetEntityData(const Entity entity, const TID tid, char* componentData, const size_t componentDataSize);
+
+		template<typename ComponentType>
+		ComponentType* GetEntityData(const Entity entity)
+		{
+			char* data = GetEntityDataPointer(entity, tid<ComponentType>());
+			return reinterpret_cast<ComponentType*>(data);
+		}
+
+		template<typename ComponentType>
+		void SetEntityData(const Entity entity, ComponentType& componentData)
+		{
+			SetEntityData(entity, tid<ComponentType>(), reinterpret_cast<char*>(&componentData), sizeof(ComponentType));
+		}
+
 		void DeleteEntity(Entity& entity);
 
 		void ReleaseEmptyBlocks();

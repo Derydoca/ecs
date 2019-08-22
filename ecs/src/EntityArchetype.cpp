@@ -70,4 +70,22 @@ namespace ECS
 		return newArchetype;
 	}
 
+	const size_t EntityArchetype::GetTypeOffset(TID componentTypeId) const
+	{
+		size_t offset = 0;
+		for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+		{
+			TID currentTypeId = m_componentTypes[i];
+			if (currentTypeId == componentTypeId)
+			{
+				return offset;
+			}
+			else
+			{
+				offset += currentTypeId.GetSize();
+			}
+		}
+		return -1;
+	}
+
 }

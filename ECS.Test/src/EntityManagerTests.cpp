@@ -115,3 +115,23 @@ TEST(EntityManager, UsedBlockCount_Equals_One_When_AnEntityIsCreatedAndHadTypeAp
 	manager.ReleaseEmptyBlocks();
 	ASSERT_EQ(debugInfo.GetNumberOfBlocksInUse(), 1);
 }
+
+TEST(EntityManager, RetrievedEntityData_Equals_SetEntityData)
+{
+	struct TestPositionComponent
+	{
+		float x;
+		float y;
+	};
+
+	ECS::EntityManager manager(128, 1);
+	auto debugInfo = ECS::EntityManagerDebugInfo(&manager);
+	ECS::EntityArchetype archetype = ECS::EntityArchetype(ECS::tid<TestPositionComponent>());
+	ECS::Entity entity;
+	manager.CreateEntity(entity, archetype);
+	TestPositionComponent dataToSet = { 1.234f, 4.321f };
+	manager.SetEntityData(entity, dataToSet);
+	TestPositionComponent* retrievedData = manager.GetEntityData<TestPositionComponent>(entity);
+	ASSERT_EQ(retrievedData->x, dataToSet.x);
+	ASSERT_EQ(retrievedData->y, dataToSet.y);
+}

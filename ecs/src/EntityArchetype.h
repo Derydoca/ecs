@@ -43,8 +43,8 @@ namespace ECS
 			TID typeToAppend
 		);
 
-		int GetChunkCapacity() const { return m_chunkCapacity; }
-		size_t GetEntitySize() const { return m_entitySize; }
+		const size_t GetEntitySize() const { return m_entitySize; }
+		const size_t GetTypeOffset(TID componentTypeId) const;
 
 		const bool ArchetypeContainsAllMyTypes(const EntityArchetype& rhs) const
 		{
@@ -69,7 +69,7 @@ namespace ECS
 			return true;
 		}
 
-		const bool Equals(const EntityArchetype& rhs, EntityArchetypeComparisonFlags flags = EntityArchetypeComparisonFlags::None) const{
+		const bool Equals(const EntityArchetype& rhs, EntityArchetypeComparisonFlags flags = EntityArchetypeComparisonFlags::None) const {
 			if (flags & EntityArchetypeComparisonFlags::IgnoreOrder)
 			{
 				return ArchetypeContainsAllMyTypes(rhs) && rhs.ArchetypeContainsAllMyTypes(*this);
@@ -80,7 +80,7 @@ namespace ECS
 			}
 		}
 
-		bool operator==(const EntityArchetype& rhs) const
+		const bool operator==(const EntityArchetype& rhs) const
 		{
 			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
 			{
@@ -92,14 +92,13 @@ namespace ECS
 			return true;
 		}
 
-		bool operator!=(const EntityArchetype& rhs) const
+		const bool operator!=(const EntityArchetype& rhs) const
 		{
 			return !operator==(rhs);
 		}
 	private:
 		TID m_componentTypes[MAX_TYPE_IDENTIFIER_COUNT];
 		size_t m_entitySize;
-		int m_chunkCapacity;
 	};
 
 }

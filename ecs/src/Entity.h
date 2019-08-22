@@ -14,6 +14,11 @@ namespace ECS
 			return m_id;
 		}
 
+		operator int()
+		{
+			return m_id;
+		}
+
 		bool operator==(const Entity& rhs) const
 		{
 			return m_id == rhs.m_id;
