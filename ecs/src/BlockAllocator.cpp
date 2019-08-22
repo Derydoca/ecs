@@ -20,7 +20,7 @@ namespace ECS
 
 		BlockAllocator::~BlockAllocator()
 		{
-			//free(m_data);
+			free(m_data);
 		}
 
 		MemoryBlockDescriptor BlockAllocator::Allocate()
@@ -31,7 +31,7 @@ namespace ECS
 			{
 				data = &m_data + (m_blockSize * id);
 			}
-			return MemoryBlockDescriptor(id, m_blockSize, m_data);
+			return MemoryBlockDescriptor(id, m_blockSize, m_data + m_blockSize * id);
 		}
 
 		void BlockAllocator::Free(MemoryBlockDescriptor& memoryBlock)

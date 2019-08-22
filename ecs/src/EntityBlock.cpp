@@ -61,6 +61,16 @@ namespace ECS
 
 		void EntityBlock::InsertEntityCopy(unsigned int entityIndex, Entity entity, EntityArchetype sourceArchetype, char* sourceEntityData)
 		{
+			InsertEntity(entityIndex, entity);
+			InsertEntityData(entityIndex, sourceEntityData);
+		}
+
+		void EntityBlock::Release()
+		{
+			m_archetype = EntityArchetype::Empty;
+			// TODO: Evaluate if this should be a pointer to a block descriptor instead
+			//m_blockDescriptor = nullptr;
+			m_maxEntityCount = 0;
 		}
 
 		void EntityBlock::Initialize()
@@ -80,7 +90,9 @@ namespace ECS
 			// Set all entities to an invalid ID
 			if (m_blockDescriptor.m_data)
 			{
-				memset(m_blockDescriptor.m_data, Entity::INVALID_ENTITY_ID, m_maxEntityCount);
+				size_t headerSize = sizeof(Entity) * m_maxEntityCount;
+				memset(m_blockDescriptor.m_data, Entity::INVALID_ENTITY_ID, headerSize);
+				memset(m_blockDescriptor.m_data + headerSize, 0, m_blockDescriptor.m_blockSize - headerSize);
 			}
 		}
 

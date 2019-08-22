@@ -47,3 +47,10 @@ TEST(BlockAllocator, DeallocatingABlock_Sets_IdToInvalidValue) {
 	allocator.Free(descriptor);
 	ASSERT_EQ(descriptor.m_id, -1);
 }
+
+TEST(BlockAllocator, BlockDataLocationForTwoDistinctBlocks_NE_Eachother) {
+	ECS::Memory::BlockAllocator allocator(1024, 10);
+	ECS::Memory::MemoryBlockDescriptor descriptor0 = allocator.Allocate();
+	ECS::Memory::MemoryBlockDescriptor descriptor1 = allocator.Allocate();
+	ASSERT_NE(descriptor0.m_data, descriptor1.m_data);
+}

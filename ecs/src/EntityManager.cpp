@@ -25,6 +25,11 @@ void ECS::EntityManager::CreateEntity(Entity& entity)
 	CreateEntityWithData(entity, EntityArchetype::Empty, nullptr);
 }
 
+void ECS::EntityManager::CreateEntity(Entity& entity, const EntityArchetype& archetype)
+{
+	CreateEntityWithData(entity, archetype, nullptr);
+}
+
 void ECS::EntityManager::CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer)
 {
 	assert(entity.m_id < 0);
@@ -39,7 +44,10 @@ void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
 	EntityArchetype sourceArchetype = sourceEntityBlock->GetArchetype();
 	EntityArchetype destinationArchetype = EntityArchetype::CreateArchetypeWithNewType(sourceArchetype, tid);
 
-	EntityLocation destinationLocation;
+	int nextOpenBlockIndex = -1;
+	unsigned int destinationBlockIndex = 0;
+	unsigned int destinationEntityIndex = 0;
+	bool destinationLocationFound = false;
 	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
 	{
 		Memory::EntityBlock* entityBlock = &m_entityBlocks[blockIndex];
@@ -51,19 +59,38 @@ void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
 				Entity entity = entityArray[entityIndex];
 				if (entity.m_id == Entity::INVALID_ENTITY_ID)
 				{
-					destinationLocation.Set(blockIndex, entityIndex);
+					destinationBlockIndex = blockIndex;
+					destinationEntityIndex = entityIndex;
+					destinationLocationFound = true;
 				}
 			}
 		}
+		else if (nextOpenBlockIndex < 0 && entityBlock->GetArchetype() == EntityArchetype::Empty)
+		{
+			nextOpenBlockIndex = blockIndex;
+		}
 	}
-	Memory::EntityBlock* destinationBlock = &m_entityBlocks[destinationLocation.GetBlockIndex()];
+
+	if (!destinationLocationFound && nextOpenBlockIndex >= 0)
+	{
+		Memory::EntityBlock* entityBlock = &m_entityBlocks[nextOpenBlockIndex];
+		entityBlock->Assign(m_allocator.Allocate(), destinationArchetype);
+		destinationBlockIndex = nextOpenBlockIndex;
+		destinationEntityIndex = 0;
+		destinationLocationFound = true;
+	}
+
+	assert(destinationLocationFound);
+
+	Memory::EntityBlock* destinationBlock = &m_entityBlocks[destinationBlockIndex];
 	destinationBlock->InsertEntityCopy
 	(
-		destinationLocation.GetEntityIndex(),
+		destinationEntityIndex,
 		entity,
 		sourceArchetype,
 		sourceEntityBlock->GetEntityMemoryAddress(sourceLocation.GetEntityIndex())
 	);
+	m_entityLocations[entity.GetId()].Set(destinationBlockIndex, destinationEntityIndex);
 	sourceEntityBlock->DeleteEntity(sourceLocation.GetEntityIndex());
 }
 
@@ -75,6 +102,32 @@ void ECS::EntityManager::DeleteEntity(Entity& entity)
 	unsigned int entityIndex = location.GetEntityIndex();
 	m_entityBlocks[blockIndex].DeleteEntity(entityIndex);
 	m_entityLocations[entity.GetId()].ResetToInvalid();
+}
+
+void ECS::EntityManager::ReleaseEmptyBlocks()
+{
+	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
+	{
+		Memory::EntityBlock* entityBlock = &m_entityBlocks[blockIndex];
+		if (entityBlock->GetMaxEntityCount() != 0 && entityBlock->GetArchetype() != EntityArchetype::Empty)
+		{
+			bool blockIsEmpty = true;
+			Entity* entityArray = reinterpret_cast<Entity*>(entityBlock->GetDescriptor().m_data);
+			for (unsigned int i = 0; i < static_cast<unsigned int>(entityBlock->GetMaxEntityCount()); i++)
+			{
+				if (entityArray[i].GetId() != Entity::INVALID_ENTITY_ID)
+				{
+					blockIsEmpty = false;
+					break;
+				}
+			}
+			if (blockIsEmpty)
+			{
+				m_allocator.Free(entityBlock->m_blockDescriptor);
+				entityBlock->Release();
+			}
+		}
+	}
 }
 
 void ECS::EntityManager::InsertEntityDataInFirstOpenSlot(const Entity entity, const EntityArchetype archetype, char* dataPointer)

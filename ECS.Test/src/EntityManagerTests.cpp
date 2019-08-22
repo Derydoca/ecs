@@ -68,3 +68,50 @@ TEST(EntityManager, EntityCount_Equals_Zero_When_TwoEntitiesAreCreatedAndDeleted
 	size_t entityCount = debugInfo.GetEntityCount();
 	ASSERT_EQ(entityCount, 0);
 }
+
+TEST(EntityManager, EntityBlockArchetype_Equals_EmptyArchetype_When_NoArchetypeIsSupplied)
+{
+	ECS::EntityManager manager(128, 1);
+	auto debugInfo = ECS::EntityManagerDebugInfo(&manager);
+	ECS::Entity entity;
+	manager.CreateEntity(entity);
+	ECS::EntityArchetype fetchedArchetype = debugInfo.GetEntityBlockArchetype(entity);
+	ASSERT_EQ(fetchedArchetype, ECS::EntityArchetype::Empty);
+}
+
+TEST(EntityManager, EntityBlockArchetype_Equals_CreatedArchetype)
+{
+	ECS::EntityManager manager(128, 1);
+	auto debugInfo = ECS::EntityManagerDebugInfo(&manager);
+	ECS::EntityArchetype archetype = ECS::EntityArchetype(ECS::tid<int>(), ECS::tid<float>());
+	ECS::Entity entity;
+	manager.CreateEntity(entity, archetype);
+	ECS::EntityArchetype fetchedArchetype = debugInfo.GetEntityBlockArchetype(entity);
+	ASSERT_EQ(fetchedArchetype, archetype);
+}
+
+TEST(EntityManager, EntityBlockArchetype_Equals_ArchetypeWithFloatType_When_FloatTypeIsAddedToEntity)
+{
+	ECS::EntityManager manager(128, 2);
+	auto debugInfo = ECS::EntityManagerDebugInfo(&manager);
+	ECS::EntityArchetype archetype = ECS::EntityArchetype(ECS::tid<int>());
+	ECS::Entity entity;
+	manager.CreateEntity(entity, archetype);
+	manager.AddComponentData(entity, ECS::tid<float>());
+	ECS::EntityArchetype fetchedArchetype = debugInfo.GetEntityBlockArchetype(entity);
+	ECS::EntityArchetype expectedArchetype = ECS::EntityArchetype(ECS::tid<int>(), ECS::tid<float>());
+	ASSERT_EQ(fetchedArchetype, expectedArchetype);
+}
+
+TEST(EntityManager, UsedBlockCount_Equals_One_When_AnEntityIsCreatedAndHadTypeAppendedToIt)
+{
+	ECS::EntityManager manager(128, 2);
+	auto debugInfo = ECS::EntityManagerDebugInfo(&manager);
+	ECS::EntityArchetype archetype = ECS::EntityArchetype(ECS::tid<int>());
+	ECS::Entity entity;
+	manager.CreateEntity(entity, archetype);
+	manager.AddComponentData(entity, ECS::tid<float>());
+	ASSERT_EQ(debugInfo.GetNumberOfBlocksInUse(), 2);
+	manager.ReleaseEmptyBlocks();
+	ASSERT_EQ(debugInfo.GetNumberOfBlocksInUse(), 1);
+}

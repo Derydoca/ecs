@@ -118,6 +118,24 @@ TEST_F(EntityBlockTest, EntityID_Equals_InvalidEntity_When_EntityIsDeleted)
 	ASSERT_EQ(deletedEntityId, ECS::Entity::INVALID_ENTITY_ID);
 }
 
+TEST_F(EntityBlockTest, AllEntities_Equal_Invalid_When_BlockIsConstructed)
+{
+	ECS::Entity* entities = reinterpret_cast<ECS::Entity*>(entityBlock.GetDescriptor().m_data);
+	for (size_t i = 0; i < entityBlock.GetMaxEntityCount(); i++)
+	{
+		ASSERT_EQ(entities[i], ECS::Entity::INVALID_ENTITY_ID);
+	}
+}
+
+TEST_F(EntityBlockTest, AllDataAfterEntities_Equal_Zero_When_BlockIsConstructed)
+{
+	char* data = entityBlock.GetDescriptor().m_data;
+	for (size_t i = entityBlock.GetMaxEntityCount() * sizeof(ECS::Entity); i < entityBlock.GetDescriptor().m_blockSize; i++)
+	{
+		ASSERT_EQ(data[i], char(0));
+	}
+}
+
 TEST(EntityBlock, MaxEntityCount_Equals_CapacityOfEntireBlock_When_ArchetypeHasNoTypes)
 {
 	ECS::Memory::MemoryBlockDescriptor blockDescriptor = ECS::Memory::MemoryBlockDescriptor(25, 256, nullptr);

@@ -46,28 +46,33 @@ namespace ECS
 		int GetChunkCapacity() const { return m_chunkCapacity; }
 		size_t GetEntitySize() const { return m_entitySize; }
 
-		bool Equals(const EntityArchetype& rhs, EntityArchetypeComparisonFlags flags = EntityArchetypeComparisonFlags::None) const{
-			if (flags & EntityArchetypeComparisonFlags::IgnoreOrder)
+		const bool ArchetypeContainsAllMyTypes(const EntityArchetype& rhs) const
+		{
+			bool found = false;
+			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
 			{
-				bool found = false;
-				for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+				found = false;
+				TID thisTid = m_componentTypes[i];
+				for (size_t j = 0; j < MAX_TYPE_IDENTIFIER_COUNT; j++)
 				{
-					found = false;
-					TID thisTid = m_componentTypes[i];
-					for (size_t j = 0; j < MAX_TYPE_IDENTIFIER_COUNT; j++)
+					if (thisTid == rhs.m_componentTypes[j])
 					{
-						if (thisTid == rhs.m_componentTypes[j])
-						{
-							found = true;
-							break;
-						}
-					}
-					if (!found)
-					{
-						return false;
+						found = true;
+						break;
 					}
 				}
-				return true;
+				if (!found)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		const bool Equals(const EntityArchetype& rhs, EntityArchetypeComparisonFlags flags = EntityArchetypeComparisonFlags::None) const{
+			if (flags & EntityArchetypeComparisonFlags::IgnoreOrder)
+			{
+				return ArchetypeContainsAllMyTypes(rhs) && rhs.ArchetypeContainsAllMyTypes(*this);
 			}
 			else
 			{
