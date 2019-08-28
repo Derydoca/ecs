@@ -73,7 +73,7 @@ namespace ECS
 			}
 		}
 	private:
-		void InsertEntityDataInFirstOpenSlot(const Entity entity, const EntityArchetype archetype, char* dataPointer);
+		void InsertEntityInFirstOpenSlot(const Entity entity, const EntityArchetype archetype);
 	private:
 		Memory::BlockAllocator m_allocator;
 		size_t m_blockCount;

@@ -56,49 +56,6 @@ TEST_F(EntityBlockTest, BlockSize_GE_HeaderAndEntitySize) {
 	ASSERT_GE(blockSize, headerOffset + (entityBlock.GetMaxEntityCount() * archetype.GetEntitySize()));
 }
 
-//TEST_F(EntityBlockTest, EntityData_Equals_InsertedData) {
-//	char* entityData = reinterpret_cast<char*>(malloc(archetype.GetEntitySize()));
-//	for (size_t i = 0; i < archetype.GetEntitySize(); i++)
-//	{
-//		entityData[i] = static_cast<char>(i);
-//	}
-//	entityBlock.InsertEntityData(2, entityData);
-//	ECS::TID tidInt = ECS::tid<int>();
-//	ECS::TID tidFloat = ECS::tid<float>();
-//	char* retrievedInt = entityBlock.GetComponentPointer(tidInt, 2);
-//	char* retrievedFloat = entityBlock.GetComponentPointer(tidFloat, 2);
-//	ASSERT_TRUE(memcmp(entityData, retrievedInt, tidInt.GetSize()) == 0);
-//	ASSERT_TRUE(memcmp(entityData + tidInt.GetSize(), retrievedFloat, tidFloat.GetSize()) == 0);
-//	free(entityData);
-//}
-
-//TEST_F(EntityBlockTest, EntityData_Equals_Zero_When_Deleted) {
-//	char* entityData = reinterpret_cast<char*>(malloc(archetype.GetEntitySize()));
-//	for (size_t i = 0; i < archetype.GetEntitySize(); i++)
-//	{
-//		entityData[i] = static_cast<char>(i);
-//	}
-//	entityBlock.InsertEntityData(2, entityData);
-//	entityBlock.DeleteEntity(2);
-//	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
-//	memset(entityData, 0, archetype.GetEntitySize());
-//	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) == 0);
-//	free(entityData);
-//}
-//
-//TEST_F(EntityBlockTest, EntityData_NotEquals_SourceData_When_Deleted) {
-//	char* entityData = reinterpret_cast<char*>(malloc(archetype.GetEntitySize()));
-//	for (size_t i = 0; i < archetype.GetEntitySize(); i++)
-//	{
-//		entityData[i] = static_cast<char>(i);
-//	}
-//	entityBlock.InsertEntityData(2, entityData);
-//	entityBlock.DeleteEntity(2);
-//	char* blockEntityData = entityBlock.GetEntityMemoryAddress(2);
-//	ASSERT_TRUE(memcmp(entityData, blockEntityData, archetype.GetEntitySize()) != 0);
-//	free(entityData);
-//}
-
 TEST_F(EntityBlockTest, NewBlockWithAssign_Equals_ConstructorVariant)
 {
 	auto newBlock = ECS::Memory::EntityBlock();

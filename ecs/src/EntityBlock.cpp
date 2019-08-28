@@ -27,20 +27,6 @@ namespace ECS
 			reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex] = entity;
 		}
 
-		void EntityBlock::InsertEntityData(const int entityIndex, const char* data)
-		{
-			assert(entityIndex < m_maxEntityCount);
-			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
-			{
-				TID tid = m_archetype.GetType(i);
-				size_t typeSize = tid.GetSize();
-				size_t typeOffset = m_archetype.GetTypeOffset(tid);
-				char* componentPtr = GetComponentPointer(tid) + typeSize * entityIndex;
-
-				memcpy(componentPtr, data + typeOffset, typeSize);
-			}
-		}
-
 		void EntityBlock::DeleteEntity(const int entityIndex)
 		{
 			assert(entityIndex < m_maxEntityCount);

@@ -16,7 +16,6 @@ namespace ECS
 			const EntityArchetype& GetArchetype() { return m_archetype; }
 			const size_t GetMaxEntityCount() const { return m_maxEntityCount; }
 			void InsertEntity(const int entityIndex, const Entity entity);
-			void InsertEntityData(const int entityIndex, const char* data);
 			void DeleteEntity(const int entityIndex);
 			const Entity GetEntity(const int entityIndex) const;
 			void Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype);

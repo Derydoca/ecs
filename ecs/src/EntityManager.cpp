@@ -34,7 +34,7 @@ void ECS::EntityManager::CreateEntityWithData(Entity& entity, const EntityArchet
 {
 	assert(entity.m_id < 0);
 	entity.m_id = m_nextEntityId++;
-	InsertEntityDataInFirstOpenSlot(entity, archetype, dataPointer);
+	InsertEntityInFirstOpenSlot(entity, archetype);
 }
 
 void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
@@ -158,7 +158,7 @@ void ECS::EntityManager::ReleaseEmptyBlocks()
 	}
 }
 
-void ECS::EntityManager::InsertEntityDataInFirstOpenSlot(const Entity entity, const EntityArchetype archetype, char* dataPointer)
+void ECS::EntityManager::InsertEntityInFirstOpenSlot(const Entity entity, const EntityArchetype archetype)
 {
 	unsigned int firstEmptyBlock = -1;
 	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
@@ -174,10 +174,6 @@ void ECS::EntityManager::InsertEntityDataInFirstOpenSlot(const Entity entity, co
 				{
 					entityBlock->InsertEntity(static_cast<int>(entityIndex), entity);
 					m_entityLocations[entity.GetId()].Set(blockIndex, entityIndex);
-					if (dataPointer)
-					{
-						entityBlock->InsertEntityData(static_cast<int>(entityIndex), dataPointer);
-					}
 					return;
 				}
 			}
@@ -195,10 +191,6 @@ void ECS::EntityManager::InsertEntityDataInFirstOpenSlot(const Entity entity, co
 		newBlock->Assign(memoryBlockDescriptor, archetype);
 		newBlock->InsertEntity(0, entity);
 		m_entityLocations[entity.GetId()].Set(firstEmptyBlock, 0);
-		if (dataPointer)
-		{
-			newBlock->InsertEntityData(0, dataPointer);
-		}
 	}
 	else
 	{
