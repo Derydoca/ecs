@@ -40,6 +40,7 @@ void ECS::EntityManager::CreateEntityWithData(Entity& entity, const EntityArchet
 void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
 {
 	EntityLocation sourceLocation = m_entityLocations[entity.GetId()];
+	unsigned int sourceEntityIndex = sourceLocation.GetEntityIndex();
 	Memory::EntityBlock* sourceEntityBlock = &m_entityBlocks[sourceLocation.GetBlockIndex()];
 	EntityArchetype sourceArchetype = sourceEntityBlock->GetArchetype();
 	EntityArchetype destinationArchetype = EntityArchetype::CreateArchetypeWithNewType(sourceArchetype, tid);
@@ -83,35 +84,42 @@ void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
 	assert(destinationLocationFound);
 
 	Memory::EntityBlock* destinationBlock = &m_entityBlocks[destinationBlockIndex];
-	destinationBlock->InsertEntityCopy
-	(
-		destinationEntityIndex,
-		entity,
-		sourceArchetype,
-		sourceEntityBlock->GetEntityMemoryAddress(sourceLocation.GetEntityIndex())
-	);
+	for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+	{
+		TID tid = sourceArchetype.GetType(i);
+		if (tid == NULL_TID)
+		{
+			continue;
+		}
+
+		assert(sourceArchetype.GetTypeOffset(tid) >= 0);
+
+		char* sourceComponentPtr = sourceEntityBlock->GetComponentPointer(tid, sourceEntityIndex);
+		char* destinationComponentPtr = destinationBlock->GetComponentPointer(tid, destinationEntityIndex);
+
+		memcpy(destinationComponentPtr, sourceComponentPtr, tid.GetSize());
+	}
+
 	m_entityLocations[entity.GetId()].Set(destinationBlockIndex, destinationEntityIndex);
 	sourceEntityBlock->DeleteEntity(sourceLocation.GetEntityIndex());
+	destinationBlock->InsertEntity(destinationEntityIndex, entity);
 }
 
 char* ECS::EntityManager::GetEntityDataPointer(Entity entity, TID componentTypeId)
 {
 	EntityLocation location = m_entityLocations[entity];
 	Memory::EntityBlock entityBlock = m_entityBlocks[location.GetBlockIndex()];
-	char* entityDataLocation = entityBlock.GetEntityMemoryAddress(location.GetEntityIndex());
-	size_t offset = entityBlock.GetArchetype().GetTypeOffset(componentTypeId);
-	assert(offset >= 0);
-	return entityDataLocation;
+	char* componentStartPtr = entityBlock.GetComponentPointer(componentTypeId);
+	componentStartPtr += componentTypeId.GetSize() * location.GetEntityIndex();
+	return componentStartPtr;
 }
 
-void ECS::EntityManager::SetEntityData(Entity entity, TID componentTypeId, char* componentData, size_t componentDataSize)
+void ECS::EntityManager::SetEntityData(Entity entity, TID componentTypeId, char* componentData)
 {
 	EntityLocation location = m_entityLocations[entity];
 	Memory::EntityBlock entityBlock = m_entityBlocks[location.GetBlockIndex()];
-	char* entityDataLocation = entityBlock.GetEntityMemoryAddress(location.GetEntityIndex());
-	size_t offset = entityBlock.GetArchetype().GetTypeOffset(componentTypeId);
-	assert(offset >= 0);
-	memcpy(entityDataLocation + offset, componentData, componentDataSize);
+	char* componentStartPtr = entityBlock.GetComponentPointer(componentTypeId, location.GetEntityIndex());
+	memcpy(componentStartPtr, componentData, componentTypeId.GetSize());
 }
 
 void ECS::EntityManager::DeleteEntity(Entity& entity)
@@ -170,6 +178,7 @@ void ECS::EntityManager::InsertEntityDataInFirstOpenSlot(const Entity entity, co
 					{
 						entityBlock->InsertEntityData(static_cast<int>(entityIndex), dataPointer);
 					}
+					return;
 				}
 			}
 		}

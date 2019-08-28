@@ -19,10 +19,16 @@ namespace ECS
 			void InsertEntityData(const int entityIndex, const char* data);
 			void DeleteEntity(const int entityIndex);
 			const Entity GetEntity(const int entityIndex) const;
-			char* GetEntityMemoryAddress(const int entityIndex);
 			void Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype);
-			void InsertEntityCopy(unsigned int entityIndex, Entity entity, EntityArchetype sourceArchetype, char* sourceEntityData);
 			void Release();
+			char* GetComponentPointer(TID componentTypeId, int index = 0);
+			Entity* GetEntityPointer() { return reinterpret_cast<Entity*>(m_blockDescriptor.m_data); }
+
+			template<typename ComponentType>
+			ComponentType* GetComponentPointer(int index = 0)
+			{
+				return reinterpret_cast<ComponentType*>(GetComponentPointer(tid<ComponentType>()));
+			}
 		private:
 			void Initialize();
 		private:

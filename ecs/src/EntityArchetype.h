@@ -45,6 +45,7 @@ namespace ECS
 
 		const size_t GetEntitySize() const { return m_entitySize; }
 		const size_t GetTypeOffset(TID componentTypeId) const;
+		const TID GetType(size_t typeIndex) const { return m_componentTypes[typeIndex]; }
 
 		const bool ArchetypeContainsAllMyTypes(const EntityArchetype& rhs) const
 		{

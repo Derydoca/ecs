@@ -26,12 +26,12 @@ namespace ECS
 		MemoryBlockDescriptor BlockAllocator::Allocate()
 		{
 			unsigned int id = m_freeList.Pop();
-			void* data = 0;
+			char* blockData = 0;
 			if (id >= 0)
 			{
-				data = &m_data + (m_blockSize * id);
+				blockData = m_data + (m_blockSize * id);
 			}
-			return MemoryBlockDescriptor(id, m_blockSize, m_data + m_blockSize * id);
+			return MemoryBlockDescriptor(id, m_blockSize, blockData);
 		}
 
 		void BlockAllocator::Free(MemoryBlockDescriptor& memoryBlock)

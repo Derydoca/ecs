@@ -135,3 +135,40 @@ TEST(EntityManager, RetrievedEntityData_Equals_SetEntityData)
 	ASSERT_EQ(retrievedData->x, dataToSet.x);
 	ASSERT_EQ(retrievedData->y, dataToSet.y);
 }
+
+struct Position2D
+{
+	float m_x, m_y;
+	Position2D() {}
+	Position2D(float x, float y) : m_x(x), m_y(y) {}
+};
+
+void MoveSystem(ECS::EntityManager* manager, ECS::Entity entity, char* data00)
+{
+	Position2D* positionComponent = reinterpret_cast<Position2D*>(data00);
+	positionComponent->m_x += 0.1f;
+	positionComponent->m_y += 0.2f;
+}
+
+TEST(EntityManager, SystemTest)
+{
+
+	ECS::EntityManager manager(128, 2);
+	auto debugInfo = ECS::EntityManagerDebugInfo(&manager);
+	ECS::EntityArchetype archetype = ECS::EntityArchetype(ECS::tid<Position2D>());
+	for (size_t i = 0; i < 20; i++)
+	{
+		ECS::Entity entity;
+		manager.CreateEntity(entity, archetype);
+		manager.SetEntityData<Position2D>(entity, Position2D(static_cast<float>(i), static_cast<float>(i)));
+	}
+	ASSERT_EQ(debugInfo.GetNumberOfBlocksInUse(), 2);
+	manager.TransformData<Position2D>(MoveSystem);
+	for (size_t i = 0; i < 20; i++)
+	{
+		ECS::Entity entity(static_cast<int>(i));
+		Position2D* position = manager.GetEntityData<Position2D>(entity);
+		ASSERT_EQ(position->m_x, static_cast<float>(i) + 0.1f);
+		ASSERT_EQ(position->m_y, static_cast<float>(i) + 0.2f);
+	}
+}

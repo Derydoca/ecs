@@ -60,6 +60,7 @@
     <ClInclude Include="src\EntityLocation.h" />
     <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\EntityManagerDebugInfo.h" />
+    <ClInclude Include="src\EntityQuery.h" />
     <ClInclude Include="src\TypeIdentifier.h" />
     <ClInclude Include="src\components.h" />
     <ClInclude Include="src\pch.h" />

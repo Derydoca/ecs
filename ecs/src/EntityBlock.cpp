@@ -30,14 +30,30 @@ namespace ECS
 		void EntityBlock::InsertEntityData(const int entityIndex, const char* data)
 		{
 			assert(entityIndex < m_maxEntityCount);
-			memcpy(GetEntityMemoryAddress(entityIndex), data, m_archetype.GetEntitySize());
+			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+			{
+				TID tid = m_archetype.GetType(i);
+				size_t typeSize = tid.GetSize();
+				size_t typeOffset = m_archetype.GetTypeOffset(tid);
+				char* componentPtr = GetComponentPointer(tid) + typeSize * entityIndex;
+
+				memcpy(componentPtr, data + typeOffset, typeSize);
+			}
 		}
 
 		void EntityBlock::DeleteEntity(const int entityIndex)
 		{
 			assert(entityIndex < m_maxEntityCount);
-			reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex] = Entity::INVALID_ENTITY_ID;
-			memset(GetEntityMemoryAddress(entityIndex), 0, m_archetype.GetEntitySize());
+			GetEntityPointer()[entityIndex] = Entity::INVALID_ENTITY_ID;
+			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+			{
+				TID tid = m_archetype.GetType(i);
+				size_t typeSize = tid.GetSize();
+				size_t typeOffset = m_archetype.GetTypeOffset(tid);
+				char* componentPtr = GetComponentPointer(tid) + typeSize * entityIndex;
+
+				memset(componentPtr, 0, typeSize);
+			}
 		}
 
 		const Entity EntityBlock::GetEntity(const int entityIndex) const
@@ -46,23 +62,11 @@ namespace ECS
 			return reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex];
 		}
 
-		char* EntityBlock::GetEntityMemoryAddress(const int entityIndex)
-		{
-			assert(entityIndex < m_maxEntityCount);
-			return &m_blockDescriptor.m_data[sizeof(Entity) * m_maxEntityCount + entityIndex * m_archetype.GetEntitySize()];
-		}
-
 		void EntityBlock::Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype)
 		{
 			m_blockDescriptor = blockDescriptor;
 			m_archetype = archetype;
 			Initialize();
-		}
-
-		void EntityBlock::InsertEntityCopy(unsigned int entityIndex, Entity entity, EntityArchetype sourceArchetype, char* sourceEntityData)
-		{
-			InsertEntity(entityIndex, entity);
-			InsertEntityData(entityIndex, sourceEntityData);
 		}
 
 		void EntityBlock::Release()
@@ -73,19 +77,21 @@ namespace ECS
 			m_maxEntityCount = 0;
 		}
 
+		char* EntityBlock::GetComponentPointer(TID componentTypeId, int index)
+		{
+			assert(m_blockDescriptor.m_data != nullptr);
+			assert(index < m_maxEntityCount);
+			size_t offset = m_archetype.GetTypeOffset(componentTypeId);
+			offset *= m_maxEntityCount;
+			offset += m_maxEntityCount * sizeof(Entity);
+			return m_blockDescriptor.m_data + offset + componentTypeId.GetSize() * index;
+		}
+
 		void EntityBlock::Initialize()
 		{
 			size_t blockSize = m_blockDescriptor.m_blockSize;
 			size_t entitySize = m_archetype.GetEntitySize();
-			if (entitySize == 0)
-			{
-				m_maxEntityCount = blockSize / sizeof(Entity);
-			}
-			else
-			{
-				size_t headerOffset = blockSize / entitySize;
-				m_maxEntityCount = (blockSize - headerOffset) / entitySize;
-			}
+			m_maxEntityCount = blockSize / (entitySize + sizeof(Entity));
 
 			// Set all entities to an invalid ID
 			if (m_blockDescriptor.m_data)

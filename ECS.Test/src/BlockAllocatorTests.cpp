@@ -54,3 +54,12 @@ TEST(BlockAllocator, BlockDataLocationForTwoDistinctBlocks_NE_Eachother) {
 	ECS::Memory::MemoryBlockDescriptor descriptor1 = allocator.Allocate();
 	ASSERT_NE(descriptor0.m_data, descriptor1.m_data);
 }
+
+TEST(BlockAllocator, BlockMemoryLocation2_Equals_BlockMemoryLocation1PlusBlockSize)
+{
+	ECS::Memory::BlockAllocator allocator(128, 10);
+	ECS::Memory::MemoryBlockDescriptor descriptor0 = allocator.Allocate();
+	ECS::Memory::MemoryBlockDescriptor descriptor1 = allocator.Allocate();
+	char* expectedLocationForBlock1 = descriptor0.m_data + 128;
+	ASSERT_EQ(expectedLocationForBlock1, descriptor1.m_data);
+}
