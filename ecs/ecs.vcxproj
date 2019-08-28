@@ -62,9 +62,7 @@
     <ClInclude Include="src\EntityManagerDebugInfo.h" />
     <ClInclude Include="src\EntityQuery.h" />
     <ClInclude Include="src\TypeIdentifier.h" />
-    <ClInclude Include="src\components.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\systems.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BlockAllocator.cpp" />
@@ -73,12 +71,10 @@
     <ClCompile Include="src\EntityBlock.cpp" />
     <ClCompile Include="src\EntityLocation.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
-    <ClCompile Include="src\components.cpp" />
     <ClCompile Include="src\EntityManagerDebugInfo.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\systems.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

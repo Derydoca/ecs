@@ -64,7 +64,6 @@
     <ClCompile Include="src\EntityManagerTests.cpp" />
     <ClCompile Include="src\EntityTests.cpp" />
     <ClCompile Include="src\MemoryFreeListTests.cpp" />
-    <ClCompile Include="src\TemporaryTests.cpp" />
     <ClCompile Include="src\TypeIdentifierTests.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pch.cpp">
