@@ -21,25 +21,22 @@ namespace ECS
 			Initialize();
 		}
 
-		void EntityBlock::InsertEntity(const int entityIndex, const Entity entity)
+		char* EntityBlock::GetComponentPointer(const TID& componentTypeId, int index) const
 		{
-			assert(entityIndex < m_maxEntityCount);
-			reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex] = entity;
-		}
+			assert(m_blockDescriptor.m_data != nullptr);
+			assert(index < m_maxEntityCount);
 
-		void EntityBlock::DeleteEntity(const int entityIndex)
-		{
-			assert(entityIndex < m_maxEntityCount);
-			GetEntityPointer()[entityIndex] = Entity::INVALID_ENTITY_ID;
-			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
-			{
-				TID tid = m_archetype.GetType(i);
-				size_t typeSize = tid.GetSize();
-				size_t typeOffset = m_archetype.GetTypeOffset(tid);
-				char* componentPtr = GetComponentPointer(tid) + typeSize * entityIndex;
+			// Start the offset with the header size
+			size_t offset = m_maxEntityCount * sizeof(Entity);
 
-				memset(componentPtr, 0, typeSize);
-			}
+			// Increment the offset to point at the start of the component stream
+			offset += m_archetype.GetTypeOffset(componentTypeId) * m_maxEntityCount;
+
+			// Jump to the specific component by index
+			offset += componentTypeId.GetSize() * index;
+			
+			// Return the pointer to the calculated position
+			return m_blockDescriptor.m_data + offset;
 		}
 
 		const Entity EntityBlock::GetEntity(const int entityIndex) const
@@ -48,29 +45,50 @@ namespace ECS
 			return reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex];
 		}
 
-		void EntityBlock::Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype)
+		void EntityBlock::Assign(const MemoryBlockDescriptor& blockDescriptor, const EntityArchetype& archetype)
 		{
 			m_blockDescriptor = blockDescriptor;
 			m_archetype = archetype;
+
 			Initialize();
+		}
+
+		void EntityBlock::DeleteEntity(const int entityIndex)
+		{
+			assert(entityIndex < m_maxEntityCount);
+
+			// Delete the entity entry in the header
+			GetEntityPointer()[entityIndex] = Entity::INVALID_ENTITY_ID;
+
+#if ECS_DEBUG
+			// Clear all memory of components associated with the entity
+			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+			{
+				TID tid = m_archetype.GetType(i);
+
+				// Break out early at the first instance of a null type ID
+				if (tid == NULL_TID)
+				{
+					break;
+				}
+
+				// Reset the memory for this component
+				char* componentPtr = GetComponentPointer(tid, entityIndex);
+				memset(componentPtr, 0, tid.GetSize());
+			}
+#endif
+		}
+
+		void EntityBlock::InsertEntity(const int entityIndex, const Entity entity)
+		{
+			assert(entityIndex < m_maxEntityCount);
+			reinterpret_cast<Entity*>(m_blockDescriptor.m_data)[entityIndex] = entity;
 		}
 
 		void EntityBlock::Release()
 		{
 			m_archetype = EntityArchetype::Empty;
-			// TODO: Evaluate if this should be a pointer to a block descriptor instead
-			//m_blockDescriptor = nullptr;
 			m_maxEntityCount = 0;
-		}
-
-		char* EntityBlock::GetComponentPointer(TID componentTypeId, int index)
-		{
-			assert(m_blockDescriptor.m_data != nullptr);
-			assert(index < m_maxEntityCount);
-			size_t offset = m_archetype.GetTypeOffset(componentTypeId);
-			offset *= m_maxEntityCount;
-			offset += m_maxEntityCount * sizeof(Entity);
-			return m_blockDescriptor.m_data + offset + componentTypeId.GetSize() * index;
 		}
 
 		void EntityBlock::Initialize()
@@ -79,12 +97,16 @@ namespace ECS
 			size_t entitySize = m_archetype.GetEntitySize();
 			m_maxEntityCount = blockSize / (entitySize + sizeof(Entity));
 
-			// Set all entities to an invalid ID
+			// Format the data in the block if one is provided
 			if (m_blockDescriptor.m_data)
 			{
 				size_t headerSize = sizeof(Entity) * m_maxEntityCount;
+				// Set all entities to an invalid ID
 				memset(m_blockDescriptor.m_data, Entity::INVALID_ENTITY_ID, headerSize);
+#if ECS_DEBUG
+				// Set all remaining block data to zeros
 				memset(m_blockDescriptor.m_data + headerSize, 0, m_blockDescriptor.m_blockSize - headerSize);
+#endif
 			}
 		}
 

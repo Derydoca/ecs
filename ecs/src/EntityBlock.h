@@ -12,19 +12,21 @@ namespace ECS
 		public:
 			EntityBlock();
 			EntityBlock(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype);
-			const MemoryBlockDescriptor& GetDescriptor() { return m_blockDescriptor; }
-			const EntityArchetype& GetArchetype() { return m_archetype; }
-			const size_t GetMaxEntityCount() const { return m_maxEntityCount; }
-			void InsertEntity(const int entityIndex, const Entity entity);
-			void DeleteEntity(const int entityIndex);
+
+			const EntityArchetype& GetArchetype() const { return m_archetype; }
+			char* GetComponentPointer(const TID& componentTypeId, int index = 0) const;
+			const MemoryBlockDescriptor& GetDescriptor() const { return m_blockDescriptor; }
 			const Entity GetEntity(const int entityIndex) const;
-			void Assign(MemoryBlockDescriptor blockDescriptor, EntityArchetype archetype);
+			Entity* GetEntityPointer() const { return reinterpret_cast<Entity*>(m_blockDescriptor.m_data); }
+			const size_t GetMaxEntityCount() const { return m_maxEntityCount; }
+
+			void Assign(const MemoryBlockDescriptor& blockDescriptor, const EntityArchetype& archetype);
+			void DeleteEntity(const int entityIndex);
+			void InsertEntity(const int entityIndex, const Entity entity);
 			void Release();
-			char* GetComponentPointer(TID componentTypeId, int index = 0);
-			Entity* GetEntityPointer() { return reinterpret_cast<Entity*>(m_blockDescriptor.m_data); }
 
 			template<typename ComponentType>
-			ComponentType* GetComponentPointer(int index = 0)
+			ComponentType* GetComponentPointer(int index = 0) const
 			{
 				return reinterpret_cast<ComponentType*>(GetComponentPointer(tid<ComponentType>()));
 			}
