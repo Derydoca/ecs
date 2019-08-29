@@ -3,14 +3,14 @@
 
 TEST(MemoryFreeList, TheFirstPop_Equals_Zero)
 {
-	ECS::Memory::MemoryFreeList freeList(5);
+	ECS::Memory::MemoryBlockFreeList freeList(5);
 	int poppedValue = freeList.Pop();
 	ASSERT_EQ(poppedValue, 0);
 }
 
 TEST(MemoryFreeList, TheSecondPop_Equals_One)
 {
-	ECS::Memory::MemoryFreeList freeList(5);
+	ECS::Memory::MemoryBlockFreeList freeList(5);
 	freeList.Pop();
 	int poppedValue = freeList.Pop();
 	ASSERT_EQ(poppedValue, 1);
@@ -18,7 +18,7 @@ TEST(MemoryFreeList, TheSecondPop_Equals_One)
 
 TEST(MemoryFreeList, TheThirdPop_Equals_Two)
 {
-	ECS::Memory::MemoryFreeList freeList(5);
+	ECS::Memory::MemoryBlockFreeList freeList(5);
 	freeList.Pop();
 	freeList.Pop();
 	int poppedValue = freeList.Pop();
@@ -27,7 +27,7 @@ TEST(MemoryFreeList, TheThirdPop_Equals_Two)
 
 TEST(MemoryFreeList, PopPushPop_ResultsIn_ThePushedValue)
 {
-	ECS::Memory::MemoryFreeList freeList(5);
+	ECS::Memory::MemoryBlockFreeList freeList(5);
 	freeList.Pop();
 	freeList.Push(25);
 	int poppedValue = freeList.Pop();

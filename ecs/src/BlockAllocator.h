@@ -5,11 +5,11 @@ namespace ECS
 	namespace Memory
 	{
 
-		class MemoryFreeList
+		class MemoryBlockFreeList
 		{
 		public:
-			MemoryFreeList(size_t size);
-			~MemoryFreeList();
+			MemoryBlockFreeList(size_t size);
+			~MemoryBlockFreeList();
 
 			void Push(int id);
 			int Pop();
@@ -22,16 +22,11 @@ namespace ECS
 
 		struct MemoryBlockDescriptor
 		{
-			static const int INVALID_ID = 0;
-
-			int m_id;
-			size_t m_blockSize;
-			char* m_data;
-
+		public:
 			MemoryBlockDescriptor() :
 				m_id(INVALID_ID),
 				m_blockSize(-1),
-				m_data(0)
+				m_data(nullptr)
 			{}
 
 			MemoryBlockDescriptor(int id, size_t blockSize, char* data) :
@@ -39,6 +34,8 @@ namespace ECS
 				m_blockSize(blockSize),
 				m_data(data)
 			{}
+
+			void Invalidate();
 
 			bool operator==(const MemoryBlockDescriptor& rhs) const
 			{
@@ -49,12 +46,17 @@ namespace ECS
 			{
 				return !operator==(rhs);
 			}
+		public:
+			static const int INVALID_ID = 0;
+
+			int m_id;
+			size_t m_blockSize;
+			char* m_data;
 		};
 
 		class BlockAllocator
 		{
 		public:
-
 			BlockAllocator(size_t size, size_t count);
 			~BlockAllocator();
 
@@ -65,7 +67,7 @@ namespace ECS
 			size_t m_blockSize;
 			size_t m_count;
 			char* m_data;
-			MemoryFreeList m_freeList;
+			MemoryBlockFreeList m_freeList;
 		};
 
 	}
