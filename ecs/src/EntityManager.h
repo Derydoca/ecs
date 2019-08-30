@@ -15,16 +15,16 @@ namespace ECS
 		EntityManager(const size_t blockSize = 16 * 1024, const size_t blockCount = 16);
 		~EntityManager();
 
-		void CreateEntity(Entity& entity);
-		void CreateEntity(Entity& entity, const EntityArchetype& archetype);
-		void CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer);
+		void CreateEntity(Entity& entity, const EntityArchetype& archetype = EntityArchetype::Empty);
+		void DeleteEntity(Entity& entity);
 		void AddComponentData(Entity entity, TID tid);
 
-		char* GetEntityDataPointer(const Entity entity, const TID componentTypeId);
+		char* GetEntityDataPointer(const Entity entity, const TID componentTypeId) const;
+		void ReleaseEmptyBlocks();
 		void SetEntityData(const Entity entity, const TID tid, char* componentData);
 
 		template<typename ComponentType>
-		ComponentType* GetEntityData(const Entity entity)
+		ComponentType* GetEntityData(const Entity entity) const
 		{
 			char* data = GetEntityDataPointer(entity, tid<ComponentType>());
 			return reinterpret_cast<ComponentType*>(data);
@@ -36,14 +36,7 @@ namespace ECS
 			SetEntityData(entity, tid<ComponentType>(), reinterpret_cast<char*>(&componentData));
 		}
 
-		void DeleteEntity(Entity& entity);
-
-		void ReleaseEmptyBlocks();
-
-		// Function Signature
-		// void MyTransformationSystem(EntityManager manager, const Entity entity, Position2D& position);
 		typedef void(*TransformFunction00)(EntityManager*, const Entity, char*);
-
 		template<typename ComponentType00>
 		void TransformData(TransformFunction00 transformFunction)
 		{
@@ -65,15 +58,13 @@ namespace ECS
 						Entity entity = entityPtr[entityIndex];
 						if (entityPtr[entityIndex].m_id != Entity::INVALID_ENTITY_ID)
 						{
-							//... do the transformations here
 							transformFunction(this, entity, reinterpret_cast<char*>(&componentPtr01[entityIndex]));
 						}
 					}
 				}
 			}
 		}
-	private:
-		void InsertEntityInFirstOpenSlot(const Entity entity, const EntityArchetype archetype);
+
 	private:
 		Memory::BlockAllocator m_allocator;
 		size_t m_blockCount;

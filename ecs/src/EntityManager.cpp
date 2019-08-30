@@ -20,21 +20,49 @@ ECS::EntityManager::~EntityManager()
 	delete[](m_entityLocations);
 }
 
-void ECS::EntityManager::CreateEntity(Entity& entity)
-{
-	CreateEntityWithData(entity, EntityArchetype::Empty, nullptr);
-}
-
 void ECS::EntityManager::CreateEntity(Entity& entity, const EntityArchetype& archetype)
 {
-	CreateEntityWithData(entity, archetype, nullptr);
-}
-
-void ECS::EntityManager::CreateEntityWithData(Entity& entity, const EntityArchetype archetype, char* dataPointer)
-{
 	assert(entity.m_id < 0);
+
+	// Set the entity's ID to the next available ID
 	entity.m_id = m_nextEntityId++;
-	InsertEntityInFirstOpenSlot(entity, archetype);
+
+	unsigned int firstEmptyBlock = -1;
+	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
+	{
+		Memory::EntityBlock* entityBlock = &m_entityBlocks[blockIndex];
+		if (entityBlock->GetMaxEntityCount() != 0 && entityBlock->GetArchetype() == archetype)
+		{
+			Entity* entityArray = reinterpret_cast<Entity*>(entityBlock->GetDescriptor().m_data);
+			for (unsigned int entityIndex = 0; entityIndex < static_cast<unsigned int>(entityBlock->GetMaxEntityCount()); entityIndex++)
+			{
+				Entity blockEntity = entityArray[entityIndex];
+				if (blockEntity.GetId() == Entity::INVALID_ENTITY_ID)
+				{
+					entityBlock->InsertEntity(static_cast<int>(entityIndex), entity);
+					m_entityLocations[entity.GetId()].Set(blockIndex, entityIndex);
+					return;
+				}
+			}
+		}
+		else if (firstEmptyBlock == -1 && entityBlock->GetDescriptor().m_id == Memory::MemoryBlockDescriptor::INVALID_ID)
+		{
+			firstEmptyBlock = blockIndex;
+		}
+	}
+
+	if (firstEmptyBlock != -1)
+	{
+		Memory::EntityBlock* newBlock = &m_entityBlocks[firstEmptyBlock];
+		Memory::MemoryBlockDescriptor memoryBlockDescriptor = m_allocator.Allocate();
+		newBlock->Assign(memoryBlockDescriptor, archetype);
+		newBlock->InsertEntity(0, entity);
+		m_entityLocations[entity.GetId()].Set(firstEmptyBlock, 0);
+	}
+	else
+	{
+		// TODO: Create a new block, increase the entity block array, add entity, when BlockAllocator supports dynamic block counts
+	}
 }
 
 void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
@@ -105,7 +133,7 @@ void ECS::EntityManager::AddComponentData(Entity entity, TID tid)
 	destinationBlock->InsertEntity(destinationEntityIndex, entity);
 }
 
-char* ECS::EntityManager::GetEntityDataPointer(Entity entity, TID componentTypeId)
+char* ECS::EntityManager::GetEntityDataPointer(Entity entity, TID componentTypeId) const
 {
 	EntityLocation location = m_entityLocations[entity];
 	Memory::EntityBlock entityBlock = m_entityBlocks[location.GetBlockIndex()];
@@ -155,45 +183,5 @@ void ECS::EntityManager::ReleaseEmptyBlocks()
 				entityBlock->Release();
 			}
 		}
-	}
-}
-
-void ECS::EntityManager::InsertEntityInFirstOpenSlot(const Entity entity, const EntityArchetype archetype)
-{
-	unsigned int firstEmptyBlock = -1;
-	for (unsigned int blockIndex = 0; blockIndex < static_cast<unsigned int>(m_blockCount); blockIndex++)
-	{
-		Memory::EntityBlock* entityBlock = &m_entityBlocks[blockIndex];
-		if (entityBlock->GetMaxEntityCount() != 0 && entityBlock->GetArchetype() == archetype)
-		{
-			Entity* entityArray = reinterpret_cast<Entity*>(entityBlock->GetDescriptor().m_data);
-			for (unsigned int entityIndex = 0; entityIndex < static_cast<unsigned int>(entityBlock->GetMaxEntityCount()); entityIndex++)
-			{
-				Entity blockEntity = entityArray[entityIndex];
-				if (blockEntity.GetId() == Entity::INVALID_ENTITY_ID)
-				{
-					entityBlock->InsertEntity(static_cast<int>(entityIndex), entity);
-					m_entityLocations[entity.GetId()].Set(blockIndex, entityIndex);
-					return;
-				}
-			}
-		}
-		else if (firstEmptyBlock == -1 && entityBlock->GetDescriptor().m_id == Memory::MemoryBlockDescriptor::INVALID_ID)
-		{
-			firstEmptyBlock = blockIndex;
-		}
-	}
-
-	if (firstEmptyBlock != -1)
-	{
-		Memory::EntityBlock* newBlock = &m_entityBlocks[firstEmptyBlock];
-		Memory::MemoryBlockDescriptor memoryBlockDescriptor = m_allocator.Allocate();
-		newBlock->Assign(memoryBlockDescriptor, archetype);
-		newBlock->InsertEntity(0, entity);
-		m_entityLocations[entity.GetId()].Set(firstEmptyBlock, 0);
-	}
-	else
-	{
-		// TODO: Create a new block, increase the entity block array, add entity, when BlockAllocator supports dynamic block counts
 	}
 }
