@@ -51,10 +51,11 @@ namespace ECS
 		}
 	}
 
-	EntityArchetype EntityArchetype::CreateArchetypeWithNewType(EntityArchetype archetype, TID typeToAppend)
+	EntityArchetype EntityArchetype::CreateArchetypeWithNewType(const EntityArchetype& archetype, TID typeToAppend)
 	{
 		EntityArchetype newArchetype = EntityArchetype(archetype);
 
+		// Insert the new type in the first null ID spot
 		bool completed = false;
 		for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
 		{
@@ -86,6 +87,54 @@ namespace ECS
 			}
 		}
 		return -1;
+	}
+
+	const bool EntityArchetype::ArchetypeContainsAllMyTypes(const EntityArchetype& rhs) const
+	{
+		bool found = false;
+		// For each entity in this archetype
+		for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+		{
+			// Try to find a matching component in the other archetype
+			found = false;
+			TID thisTid = m_componentTypes[i];
+			for (size_t j = 0; j < MAX_TYPE_IDENTIFIER_COUNT; j++)
+			{
+				if (thisTid == rhs.m_componentTypes[j])
+				{
+					found = true;
+					break;
+				}
+			}
+
+			// If the component could not be found, return early with a false value
+			if (!found)
+			{
+				return false;
+			}
+		}
+
+		// Otherwise, everything was found
+		return true;
+	}
+
+	const bool EntityArchetype::Equals(const EntityArchetype& rhs, EntityArchetypeComparisonFlags flags) const
+	{
+		if (flags & EntityArchetypeComparisonFlags::IgnoreOrder)
+		{
+			return ArchetypeContainsAllMyTypes(rhs) && rhs.ArchetypeContainsAllMyTypes(*this);
+		}
+		else
+		{
+			for (size_t i = 0; i < MAX_TYPE_IDENTIFIER_COUNT; i++)
+			{
+				if (m_componentTypes[i] != rhs.m_componentTypes[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 
 }
